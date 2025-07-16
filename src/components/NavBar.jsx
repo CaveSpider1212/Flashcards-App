@@ -1,6 +1,14 @@
 import { Link } from "react-router-dom"
 
+/**
+ * Function for the navigation bar component
+ */
+
 function NavBar () {
+
+    /**
+     * The <nav> element consists of the app title ("Flashcards App") and <LinK> elements routing to the different pages of the application
+     */
     return (
         <nav>
             <div>
@@ -14,6 +22,7 @@ function NavBar () {
             </div>
         </nav>
     )
+
 }
 
-export default NavBar
+export default NavBar;

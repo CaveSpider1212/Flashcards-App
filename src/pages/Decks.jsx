@@ -1,9 +1,23 @@
 import { useEffect, useState } from "react"
 import DeckView from "../components/DeckView";
 
-function Decks () {
-    const [decks, setDecks] = useState([]);
+/**
+ * Function for the "Decks" page
+ */
 
+function Decks () {
+
+    /**
+     * State variables
+     */
+    const [decks, setDecks] = useState([]); // represents the array of decks pulled from localStorage, set to an empty array by default
+
+
+    /**
+     * Reads in each deck and deck name from the localStorage and pushes the name, deck, and number into the loadedDecks array
+     * The loadedDecks array is set as the decks state array
+     * Runs only once (indicated by the empty array [])
+     */
     useEffect(() => {
         const maxDeckNum = parseInt(localStorage.getItem("maxDeckNum"));
         const loadedDecks = [];
@@ -20,6 +34,10 @@ function Decks () {
         setDecks(loadedDecks);
     }, []);
 
+
+    /**
+     * Creates a <div> element, which contains the <DeckView> components for each member of the decks state array
+     */
     return (
         <>
             <p><i>Create a deck in the "Manage Decks" menu!</i></p>
@@ -31,6 +49,7 @@ function Decks () {
             </div>
         </>
     )
+
 }
 
-export default Decks
+export default Decks;
