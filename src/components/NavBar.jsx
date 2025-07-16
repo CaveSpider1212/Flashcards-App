@@ -10,7 +10,7 @@ function NavBar () {
             <div>
                 <Link to="/">Decks</Link>
                 <Link to="/manage/0">Manage Deck</Link>
-                <Link to="/study">Study</Link>
+                <Link to="/study/0">Study</Link>
             </div>
         </nav>
     )

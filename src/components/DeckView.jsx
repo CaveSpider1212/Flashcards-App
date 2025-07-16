@@ -16,6 +16,10 @@ function DeckView ({currentDeck, deckName, deckNumber}) {
         navigate(`/manage/${deckNumber}`);
     }
 
+    const handleStudy = () => {
+        navigate(`/study/${deckNumber}`);
+    }
+
     return (
         <div className="deck-view">
             <Flashcard term={currentDeck[0].term} definition={currentDeck[0].definition} cardType="card overview" />
@@ -25,7 +29,7 @@ function DeckView ({currentDeck, deckName, deckNumber}) {
 
                 <div className="deck-buttons">
                     <input type="submit" value="Edit" onClick={handleEdit} />
-                    <input type="submit" value="Study" />
+                    <input type="submit" value="Study" onClick={handleStudy} />
                     <input type="submit" value="Delete" onClick={deleteDeck} />
                 </div>
             </div>

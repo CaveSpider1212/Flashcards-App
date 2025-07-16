@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import Flashcard from "../components/Flashcard";
 
 function Study () {
@@ -16,6 +17,17 @@ function Study () {
     
     const [selectedDeck, setSelectedDeck] = useState([]);
     const [currentCard, setCurrentCard] = useState([]);
+    const [index, setIndex] = useState(0);
+    const [isDeckSelected, setIsDeckSelected] = useState(false);
+
+    const {deckId} = useParams();
+
+    useEffect(() => {
+        if (deckId != 0) { // if the deckId (number read from URL) is not 0 (i.e. user is editing an existing deck), then get the corresponding deck and name from the localStorage
+            const deck = JSON.parse(localStorage.getItem(`deck${deckId}`));
+            setSelectedDeck(deck);
+        }
+    }, [deckId]); // runs every time deckId changes
 
     const selectDeck = (selectedValue) => {
         loadedDecks.forEach((deck) => {
@@ -29,8 +41,32 @@ function Study () {
     useEffect(() => {
         if (selectedDeck && selectedDeck.length > 0) { // if a deck has been selected and isn't empty, set the current card to the first card of the deck
             setCurrentCard(selectedDeck[0]);
+            setIndex(0);
+            setIsDeckSelected(true);
         }
     }, [selectedDeck]); // run each time selectedDeck changes
+
+    const nextCard = () => {
+        let i = index;
+
+        if (i + 1 < selectedDeck.length) {
+            setIndex(++i);
+        }
+    }
+
+    const prevCard = () => {
+        let i = index;
+
+        if (i - 1 >= 0) {
+            setIndex(--i);
+        }
+    }
+
+    useEffect(() => {
+        if (index < selectedDeck.length && index >= 0) {
+            setCurrentCard(selectedDeck[index]);
+        }
+    }, [index]);
 
     return (
         <>
@@ -38,7 +74,7 @@ function Study () {
                 <label htmlFor="decks">Choose a deck from the dropdown:</label>
 
                 <select name="decks" defaultValue="" onChange={(e) => selectDeck(e.target.value)}>
-                    <option value="" disabled hidden>--Please choose a deck to edit--</option>
+                    <option value="" disabled hidden>--Please choose a deck to study--</option>
 
                     {loadedDecks.map((deck, index) => { // in the Select dropdown, shows the deck names for each of the decks loaded from the localStorage
                         return (
@@ -51,10 +87,16 @@ function Study () {
             </div>
 
             <div>
-                <Flashcard term={currentCard.term} definition={currentCard.definition} cardType="card study" />
+                {isDeckSelected && (
+                    <div>
+                        <Flashcard term={currentCard.term} definition={currentCard.definition} cardType="card study" />
 
-                <input type="submit" value="&larr;" />
-                <input type="submit" value="&rarr;" />
+                        <button onClick={prevCard}> &larr; </button>
+                        <button onClick={nextCard}>&rarr;</button>
+
+                        <p>{index + 1}/{selectedDeck.length}</p>
+                    </div>
+                )}
             </div>
         </>
     )
