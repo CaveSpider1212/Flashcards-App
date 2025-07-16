@@ -1,0 +1,28 @@
+.card {
+    background-color: white;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: 1px solid black;
+}
+
+.createdeck {
+    width: 300px;
+    height: 180px;
+
+    margin-bottom: 10px;
+}
+
+.study {
+    width: 450px;
+    height: 270px;
+}
+
+.overview {
+    width: 150px;
+    height: 90px;
+
+    display: flex;
+}

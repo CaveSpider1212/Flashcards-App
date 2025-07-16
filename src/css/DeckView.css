@@ -1,0 +1,13 @@
+.deck-view {
+    background-color: lightgray;
+    
+    margin-bottom: 10px;
+    padding: 20px;
+
+    display: flex;
+}
+
+.right-side {
+    display: flex;
+    flex-direction: column;
+}
