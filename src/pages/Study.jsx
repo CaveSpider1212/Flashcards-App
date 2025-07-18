@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Flashcard from "../components/Flashcard";
+import "../css/Study.css"
 
 /**
  * Function for the "Study" page
@@ -133,10 +134,8 @@ function Study () {
      */
     return (
         <>
-            <div>
-                <label htmlFor="decks">Choose a deck from the dropdown:</label>
-
-                <select name="decks" defaultValue="" onChange={(e) => selectDeck(e.target.value)}>
+            <div className="select-container">
+                <select name="decks" defaultValue="" onChange={(e) => selectDeck(e.target.value)} className="study-select-input" >
                     <option value="" disabled hidden>--Please choose a deck to study--</option>
 
                     {decks.map((deck, index) => { // in the Select dropdown, shows the deck names for each of the decks loaded from the localStorage
@@ -149,15 +148,19 @@ function Study () {
                 </select>
             </div>
 
-            <div>
+            <div className="card-container">
                 {isDeckSelected && (
-                    <div>
+                    <div className="study-card">
                         <Flashcard term={currentCard.term} definition={currentCard.definition} cardType="card study" />
 
-                        <button onClick={prevCard}> &larr; </button>
-                        <button onClick={nextCard}>&rarr;</button>
+                        <div className="study-bottom-container">
+                            <div>
+                                <button onClick={prevCard} className="left-button"> &larr; </button>
+                                <button onClick={nextCard} className="right-button">&rarr;</button>
+                            </div>
 
-                        <p>{index + 1}/{selectedDeck.length}</p>
+                            <p>{index + 1}/{selectedDeck.length}</p>
+                        </div>
                     </div>
                 )}
             </div>

@@ -1,0 +1,26 @@
+.select-container, .card-container {
+    display: flex;
+    justify-content: center;
+}
+
+.study-select-input {
+    margin-top: 10px;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 15px;
+}
+
+.study-card {
+    margin-top: 10px;
+}
+
+.left-button, .right-button {
+    margin-right: 5px;
+    margin-top: 5px;
+}
+
+.study-bottom-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
