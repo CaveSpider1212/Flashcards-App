@@ -26,7 +26,7 @@
 }
 
 .edit-button:hover, .study-button:hover, .delete-button:hover {
-    border: 2px solid white;
+    color: white;
 }
 
 .edit-button {
