@@ -1,0 +1,48 @@
+.manage-deck-inputs {
+    margin-left: 15px;
+    margin-top: 10px;
+}
+
+.deck-name-input, .term-input, .definition-input, .edit-term-input, .edit-definition-input, .save-input, .add-term-input, .edit-card-input, .delete-card-input, .save-card-input {
+    margin-right: 5px;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.deck-name-input, .term-input, .definition-input {
+    border: 2px solid black;
+}
+
+.save-input, .add-term-input {
+    border: 1px solid black;
+}
+
+.save-input:hover, .add-term-input:hover, .edit-card-input:hover, .delete-card-input:hover {
+    color: white;
+}
+
+.save-input {
+    background-color: #72f78e;
+}
+
+.add-term-input, .save-card-input {
+    background-color: lightgray;
+}
+
+.edit-card-input {
+    background-color: #f7e972;
+}
+
+.delete-card-input {
+    background-color: #f77272;
+}
+
+.manage-deck-message {
+    margin-left: 15px;
+    font-style: italic;
+}
+
+.manage-deck-card {
+    margin-left: 15px;
+}

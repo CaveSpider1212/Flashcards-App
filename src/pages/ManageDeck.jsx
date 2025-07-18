@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import Flashcard from "../components/Flashcard"
+import "../css/ManageDeck.css";
 
 /**
  * Function for the "Manage Deck" page
@@ -156,39 +157,45 @@ function ManageDeck () {
      */
     return (
         <>
-            <div>
-                <input type="text" placeholder="Deck name" value={name} onChange={(e) => setName(e.target.value)} required="required"/>
+            <div className="manage-deck-inputs">
+                <div>
+                    <input type="text" placeholder="Deck name" value={name} onChange={(e) => setName(e.target.value)} required="required" className="deck-name-input" />
+                </div>
+
+                <div>
+                    <input type="text" placeholder="Term" value={term} onChange={(e) => setTerm(e.target.value)} required="required" className="term-input" />
+                    <input type="text" placeholder="Definition" value = {definition} onChange={(e) => setDefinition(e.target.value)} required = "required" className="definition-input" />
+                    <input type="submit" value="Add Card" onClick={addCard} className="add-term-input" />
+                </div>
+                
+                <div>
+                    <input type="submit" value="Save Deck" onClick={saveDeck} className="save-input" />
+                </div>
             </div>
 
-            <div>
-                <input type="text" placeholder="Term" value={term} onChange={(e) => setTerm(e.target.value)} required="required" />
-                <input type="text" placeholder="Definition" value = {definition} onChange={(e) => setDefinition(e.target.value)} required = "required" />
-                <input type="submit" value="Add Card" onClick={addCard}/>
-            </div>
-            
-            <div>
-                <input type="submit" value="Save Deck" onClick={saveDeck} />
-            </div>
+            {cards.length > 0 ? ( // shows a messsage depending on whether there are cards shown on the screen or not
+                <p className="manage-deck-message">Click on a card to flip it!</p>
+            ) : (
+                <p className="manage-deck-message">Add a deck name, and create a card by adding a term and definition using the text inputs above!</p>
+            )}
 
-            <p><i>Click on a card to flip it!</i></p>
-
-            <div>
+            <div className="manage-deck-card">
                 {cards.map((card, index) => (
                     <div key={index}>
                         {/* shows either the text box for editing or the flashcard with the term and definition, depending on the value of card.editing */}
 
                         {card.editing ? (
                             <div>
-                                <input type="text" value={editTerm} onChange={(e) => setEditTerm(e.target.value)} />
-                                <input type="text" value={editDef} onChange={(e) => setEditDef(e.target.value)} />
-                                <input type="submit" value="Save card" onClick={() => editCard(index)} />
+                                <input type="text" value={editTerm} onChange={(e) => setEditTerm(e.target.value)} className="edit-term-input" />
+                                <input type="text" value={editDef} onChange={(e) => setEditDef(e.target.value)} className="edit-definition-input" />
+                                <input type="submit" value="Save card" onClick={() => editCard(index)} className="save-card-input" />
                             </div>
                         ) : (
                             <div>
                                 <Flashcard term={card.term} definition={card.definition} cardType="card createdeck" />
 
-                                <input type="submit" value="Edit" onClick={() => toggleEdit(index)} />
-                                <input type="submit" value="Delete" onClick={() => deleteCard(index)} />
+                                <input type="submit" value="Edit" onClick={() => toggleEdit(index)} className="edit-card-input" />
+                                <input type="submit" value="Delete" onClick={() => deleteCard(index)} className="delete-card-input" />
                             </div>
                         )}
                     </div>
