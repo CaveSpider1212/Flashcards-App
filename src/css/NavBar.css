@@ -1,0 +1,27 @@
+nav {
+    font-size: 20px;
+    background-color: #21b0ea;
+    color: white;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+body {
+    margin-top: 0px;
+}
+
+.app-title {
+    font-weight: bolder;
+}
+
+.links {
+    color: white;
+    text-decoration:none;
+    margin: 20px;
+}
+
+.links:hover {
+    font-weight: bold;
+}
