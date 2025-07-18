@@ -1,3 +1,5 @@
+/* CSS for the DeckView component */
+
 .deck-view {
     background-color: lightgray;
     padding: 20px;
@@ -30,7 +32,7 @@
 }
 
 .edit-button {
-    background-color: #72f78e;
+    background-color: #f7e972;
 }
 
 .study-button {
