@@ -1,0 +1,8 @@
+@font-face {
+    font-family: appFont;
+    src: url("C:\Users\aabhw\Documents\FlashcardsApp\public\fonts\Metropolis-Regular.otf")
+}
+
+body {
+    font-family: appFont;
+}
