@@ -52,16 +52,18 @@ function DeckView ({currentDeck, deckName, deckNumber}) {
      */
     return (
         <div className="deck-view">
-            <Flashcard term={currentDeck[0].term} definition={currentDeck[0].definition} cardType="card overview" />
+            <div className="top-left">
+                <Flashcard term={currentDeck[0].term} definition={currentDeck[0].definition} cardType="card overview" />
+            </div>
 
-            <div className="right-side">
+            <div className="top-right">
                 <h1 className="deck-header">{deckName}</h1>
+            </div>
 
-                <div className="deck-buttons">
-                    <input type="submit" value="Edit" onClick={handleEdit} />
-                    <input type="submit" value="Study" onClick={handleStudy} />
-                    <input type="submit" value="Delete" onClick={deleteDeck} />
-                </div>
+            <div className="bottom">
+                <input type="submit" value="Edit" onClick={handleEdit} className="edit-button" />
+                <input type="submit" value="Study" onClick={handleStudy} className="study-button" />
+                <input type="submit" value="Delete" onClick={deleteDeck} className="delete-button" />
             </div>
         </div>
     )

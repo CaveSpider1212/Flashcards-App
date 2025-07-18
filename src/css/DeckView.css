@@ -1,13 +1,41 @@
 .deck-view {
     background-color: lightgray;
-    
-    margin-bottom: 10px;
     padding: 20px;
-
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: auto;
+    width: 40%;
+    margin-bottom: 10px;
 }
 
-.right-side {
-    display: flex;
-    flex-direction: column;
+.bottom {
+    width: 100%;
+}
+
+.deck-header {
+    margin-left: 20px;
+}
+
+.edit-button, .study-button, .delete-button {
+    margin-right: 10px;
+    margin-top: 10px;
+    background-color: white;
+    border-radius: 7px;
+}
+
+.edit-button:hover, .study-button:hover, .delete-button:hover {
+    border: 2px solid white;
+}
+
+.edit-button {
+    background-color: #72f78e;
+}
+
+.study-button {
+    background-color: #72d5f7;
+}
+
+.delete-button {
+    background-color: #f77272;
 }
