@@ -16,7 +16,7 @@
     width: 100%;
 }
 
-.deck-header {
+.deck-header, .deck-count {
     margin-left: 20px;
 }
 

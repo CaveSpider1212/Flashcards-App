@@ -53,11 +53,16 @@ function DeckView ({currentDeck, deckName, deckNumber}) {
     return (
         <div className="deck-view">
             <div className="top-left">
-                <Flashcard term={currentDeck[0].term} definition={currentDeck[0].definition} cardType="card overview" />
+                {currentDeck.length > 0 ? (
+                    <Flashcard term={currentDeck[0].term} definition={currentDeck[0].definition} cardType="card overview" />
+                ) : (
+                    <Flashcard cardType="card overview" />
+                )}
             </div>
 
             <div className="top-right">
                 <h1 className="deck-header">{deckName}</h1>
+                <p className="deck-count">Cards: {currentDeck.length}</p>
             </div>
 
             <div className="bottom">
