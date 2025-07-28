@@ -1,6 +1,6 @@
 /* CSS for the "Study" page */
 
-.select-container, .card-container {
+.select-container, .card-container, .header-container {
     display: flex;
     justify-content: center;
 }

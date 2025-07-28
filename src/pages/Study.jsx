@@ -14,6 +14,7 @@ function Study () {
      */
     const [decks, setDecks] = useState([]); // represents the available decks read from localStorage, set to an empty array [] by default (no decks read in)
     const [selectedDeck, setSelectedDeck] = useState([]); // represents the deck selected by the dropdown, set to an empty array [] by default (no deck selected)
+    const [selectedName, setSelectedName] = useState(""); // represents the name of the selected deck, set to an empty string "" by default
     const [currentCard, setCurrentCard] = useState([]); // represents the current card being shown on the screen, set to an empty array [] by default
     const [index, setIndex] = useState(0); // represents the index of the card shown on the screen, set to 0 by default
     const [isDeckSelected, setIsDeckSelected] = useState(false); // represents whether a deck has been selected or not, set to false by default
@@ -56,6 +57,9 @@ function Study () {
         if (deckId != 0) { // if the deckId (number read from URL) is not 0 (i.e. user is editing an existing deck), then get the corresponding deck and name from the localStorage
             const deck = JSON.parse(localStorage.getItem(`deck${deckId}`));
             setSelectedDeck(deck);
+
+            const deckName = localStorage.getItem(`deck${deckId}name`);
+            setSelectedName(deckName);
         }
     }, [deckId]);
 
@@ -94,6 +98,7 @@ function Study () {
             if (deck.currentDeckName === selectedValue) {
                 // if the name of the current deck in the forEach loop is the same as the value selected, set the selectedDeck to the current deck
                 setSelectedDeck(deck.currentDeck);
+                setSelectedName(deck.currentDeckName);
             }
         })
     }
@@ -106,8 +111,11 @@ function Study () {
     const nextCard = () => {
         let i = index;
 
-        if (i + 1 < selectedDeck.length) { // if the new index wouldn't go past the deck bounds
+        if (i + 1 < selectedDeck.length) { // if the new index wouldn't go past the deck bounds, increment by 1
             setIndex(++i);
+        }
+        else { // if the new index would go past the deck bounds, set it back to 0 (the first card)
+            setIndex(0);
         }
     }
 
@@ -119,8 +127,11 @@ function Study () {
     const prevCard = () => {
         let i = index;
 
-        if (i - 1 >= 0) {
+        if (i - 1 >= 0) { // if the new index wouldn't go past the deck bounds, decrement by 1
             setIndex(--i);
+        }
+        else { // if the new index would go past the deck bounds, set it to the length of the deck - 1 (the last card)
+            setIndex(selectedDeck.length - 1);
         }
     }
 
@@ -147,11 +158,19 @@ function Study () {
                     })}
                 </select>
             </div>
+            
+            <div className="header-container">
+                <h3>{selectedName}</h3>
+            </div>
 
             <div className="card-container">
                 {isDeckSelected && (
                     <div className="study-card">
-                        <Flashcard term={currentCard.term} definition={currentCard.definition} cardType="card study" />
+                        {selectedDeck.length > 0 ? (
+                            <Flashcard term={currentCard.term} definition={currentCard.definition} cardType="card study" />
+                        ) : (
+                            <Flashcard cardType="card study" />
+                        )}
 
                         <div className="study-bottom-container">
                             <div>
@@ -159,7 +178,9 @@ function Study () {
                                 <button onClick={nextCard} className="right-button">&rarr;</button>
                             </div>
 
-                            <p>{index + 1}/{selectedDeck.length}</p>
+                            {selectedDeck.length > 0 && (
+                                <p>{index + 1}/{selectedDeck.length}</p>
+                            )}
                         </div>
                     </div>
                 )}
