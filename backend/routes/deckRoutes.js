@@ -5,10 +5,10 @@ const router = express.Router();
 
 router.get("/", getDecks);
 
-router.get("/:deckId", getDeckById);
+router.get("/:id", getDeckById);
 
 router.post("/", createDeck);
 
-router.delete("/:deckId", deleteDeck);
+router.delete("/:id", deleteDeck);
 
 module.exports = router;
