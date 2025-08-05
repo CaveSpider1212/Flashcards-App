@@ -17,6 +17,19 @@ const getDeckById = async (req, res) => {
     res.status(201).json(deck);
 }
 
+const updateDeck = async (req, res) => {
+    const deck = Deck.findById(req.params.id);
+
+    if (!deck) {
+        res.status(404);
+        throw("Deck not found!");
+    }
+
+    const newDeck = Deck.findByIdAndUpdate(req.params.id, req.body);
+
+    res.status(200).json(newDeck);
+}
+
 const createDeck = async (req, res) => {
     const {name, description} = req.body;
     const newDeck = await Deck.create({name, description});
@@ -30,4 +43,4 @@ const deleteDeck = async (req, res) => {
     res.status(201).send(`Deleted deck with ID: ${req.params.id}`);
 };
 
-module.exports = {getDecks, getDeckById, createDeck, deleteDeck};
+module.exports = {getDecks, getDeckById, updateDeck, createDeck, deleteDeck};
