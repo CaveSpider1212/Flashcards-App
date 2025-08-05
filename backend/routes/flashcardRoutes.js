@@ -3,7 +3,7 @@ const router = express.Router();
 
 const {createFlashcard, updateFlashcard, deleteFlashcard} = require("../controllers/flashcardController");
 
-router.post("/", createFlashcard);
+router.post("/:id", createFlashcard);
 
 router.put("/:id", updateFlashcard);
 
