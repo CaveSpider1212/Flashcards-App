@@ -14,6 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/decks", require("./routes/deckRoutes"));
+app.use("/api/flashcards", require("./routes/flashcardRoutes"));
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
