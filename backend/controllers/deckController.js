@@ -18,14 +18,14 @@ const getDeckById = async (req, res) => {
 }
 
 const updateDeck = async (req, res) => {
-    const deck = Deck.findById(req.params.id);
+    const deck = await Deck.findById(req.params.id);
 
     if (!deck) {
         res.status(404);
         throw("Deck not found!");
     }
 
-    const newDeck = Deck.findByIdAndUpdate(req.params.id, req.body);
+    const newDeck = await Deck.findByIdAndUpdate(req.params.id, req.body, {new: true});
 
     res.status(200).json(newDeck);
 }
