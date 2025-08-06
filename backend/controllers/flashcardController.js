@@ -5,8 +5,6 @@ const createFlashcard = async (req, res) => {
     const deckId = req.params.id;
     const {term, definition} = req.body;
 
-    console.log(deckId);
-
     const newCard = await Flashcard.create({term, definition, deck: deckId});
     const savedCard = await newCard.save();
 
@@ -29,7 +27,13 @@ const updateFlashcard = async (req, res) => {
 
 const deleteFlashcard = async (req, res) => {
     const deleteCard = await Flashcard.findByIdAndDelete(req.params.id);
-    await Deck.findByIdAndUpdate(req.params.id, {$pull: {cards: deleteCard._id}});
+
+    if (!deleteCard) {
+        res.status(404);
+        throw("Card not found!");
+    }
+    
+    await Deck.findByIdAndUpdate(deleteCard.deck, {$pull: {cards: deleteCard._id}});
 
     res.status(201).send(`Deleted card with ID: ${req.params.id}`);
 };
