@@ -1,5 +1,11 @@
+// IMPORT: mongoose
 const mongoose = require("mongoose");
 
+/**
+ * Term: flashcard's term (String, required)
+ * Definition: flashcard's definition (String, required)
+ * Deck: ID of the deck the card is part of (ObjectId)
+ */
 const flashcardSchema = mongoose.Schema({
     term: {
         type: String,
@@ -17,4 +23,5 @@ const flashcardSchema = mongoose.Schema({
     }
 })
 
+// EXPORTS: Flashcard mongoose model
 module.exports = mongoose.model("Flashcard", flashcardSchema);

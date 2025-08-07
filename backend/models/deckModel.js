@@ -1,5 +1,12 @@
+// IMPORT: mongoose
 const mongoose = require("mongoose");
 
+/**
+ * Name: name of the deck (String, required)
+ * Description: description of the deck (String)
+ * Cards: array of ID's of the cards of the deck (ObjectId)
+ * CreatedDate: date the deck was created, set to the local date and time (Date)
+ */
 const deckSchema = mongoose.Schema({
     name: {
         type: String,
@@ -21,4 +28,5 @@ const deckSchema = mongoose.Schema({
     }
 })
 
+// EXPORTS: Deck mongoose model
 module.exports = mongoose.model("Deck", deckSchema);
