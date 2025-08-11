@@ -1,0 +1,69 @@
+// IMPORTS: User models, bcrypt, jsonwebtoken
+const User = require("../models/userModel");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+
+/**
+ * ROUTE: POST /api/users/register
+ * DESCRIPTION: Register a user by taking the username and password values in the request body, checking if a user already exists
+ *              with that username, and if not, hashes the password and creates a user in the database
+ */
+const registerUser = async (req, res) => {
+    const {username, password} = req.body;
+
+    // Data validation -- if either username or password is null, then don't accept the request
+    if (!username || !password) {
+        res.status(404);
+        throw("Both username and password are required!");
+    }
+
+    // Checks if there is already a user existing with the username in the request
+    const existingUser = await User.findOne({username});
+    if (existingUser) {
+        res.status(400).json({message: `User ${username} already exists!`});
+    }
+
+    // Hashes the given password 10 times to be stored in the database
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Creates a new user in the database with the username and hashed password
+    const newUser = await User.create({username, password: hashedPassword});
+    res.status(201).json(newUser);
+}
+
+/**
+ * ROUTE: POST /api/users/login
+ * DESCRIPTION: Login a user by taking the username and password values in the request body and comparing it with the data in 
+ *              the database
+ */
+const loginUser = async (req, res) => {
+    const {username, password} = req.body;
+
+    // Data validation -- if either username or password in the request body is null, then don't accept the request
+    if (!username || !password) {
+        res.status(400);
+        throw("Username and password are both required!");
+    }
+
+    const user = await User.findOne({username});
+
+    // If a user exists with that username and the request password matches the hashed password in the database with that user,
+    // then accept the request and log in the user
+    if (user && (await bcrypt.compare(password, user.password))) {
+        const accessToken = jwt.sign(
+            {user: {username: user.username, id: user.id}},
+            process.env.ACCESS_TOKEN_SECRET,
+            {expiresIn: "7d"}
+        );
+
+        res.status(201).json({username: user.username, token: accessToken, id: user._id});
+    }
+    else {
+        res.status(401);
+        throw("Username or password is invalid");
+    }
+}
+
+
+module.exports = {registerUser, loginUser};

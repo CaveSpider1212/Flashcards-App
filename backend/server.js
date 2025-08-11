@@ -17,6 +17,7 @@ app.use(express.json());
 // ADD DECK AND FLASHCARD ROUTES TO APP
 app.use("/api/decks", require("./routes/deckRoutes"));
 app.use("/api/flashcards", require("./routes/flashcardRoutes"));
+app.use("/api/users", require("./routes/userRoutes"));
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
