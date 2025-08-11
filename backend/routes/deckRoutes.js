@@ -9,7 +9,7 @@ const router = express.Router();
 router.get("/", getDecks);
 router.get("/:id", getDeckById);
 router.put("/:id", updateDeck);
-router.post("/", createDeck);
+router.post("/:id", createDeck);
 router.delete("/:id", deleteDeck);
 
 // EXPORTS: router

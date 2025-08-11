@@ -14,6 +14,11 @@ const userSchema = mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+
+    decks: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Decks"
     }
 }, {timestamps: true});
 

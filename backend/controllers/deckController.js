@@ -1,6 +1,7 @@
 // IMPORTS: Deck and Flashcard models
 const Deck = require("../models/deckModel");
 const Flashcard = require("../models/flashcardModel");
+const User = require("../models/userModel");
 
 
 /**
@@ -59,20 +60,24 @@ const updateDeck = async (req, res) => {
 
 
 /**
- * ROUTE: POST /api/decks/
+ * ROUTE: POST /api/decks/:id
  * DESCRIPTION: Takes the name and description from the request body and creates a new deck, adding it to the decks collection
  *              in the database
  */
 const createDeck = async (req, res) => {
     try {
         const {name, description} = req.body;
+        const userId = req.params.id;
         
         // Data validation -- if name is null, then don't accept the request; otherwise, create the deck using the request body values
         if (!name) {
             res.status(400).json({message: "Name is required"});
         }
 
-        const newDeck = await Deck.create({name, description});
+        // Creates a new deck, and adds it to the array of deck ID's of the user
+        const newDeck = await Deck.create({name, description, user: userId});
+        await User.findByIdAndUpdate(userId, {$push: {decks: newDeck._id}});
+
         res.status(201).json(newDeck);
     } catch (err) {
         console.log(err);
@@ -82,15 +87,19 @@ const createDeck = async (req, res) => {
 
 /**
  * ROUTE: DELETE /api/decks/:id
- * DESCRIPTION: Finds the corresponding deck by the request parameter and deletes it, if found, along with all flashcards associated
- *              with that deck
+ * DESCRIPTION: Finds the corresponding deck by the request parameter and deletes it
  */
 const deleteDeck = async (req, res) => {
     try {
         const deckId = req.params.id;
 
+        // Deletes all flashcards associated with the deck
         await Flashcard.deleteMany({deck: deckId});
-        await Deck.findByIdAndDelete(deckId);
+
+        const deleteDeck = await Deck.findByIdAndDelete(deckId);
+
+        // Removes the deck from the array of decks of the user
+        await User.findByIdAndUpdate(deleteDeck.user, {$pull: {decks: deleteDeck._id}});
 
         res.status(201).send(`Deleted deck with ID: ${req.params.id}`);
     } catch (err) {
