@@ -23,7 +23,7 @@ const createFlashcard = async (req, res) => {
         const savedCard = await newCard.save();
         
         // adds the new card's ID to the array of card IDs of the card's deck
-        await Deck.findByIdAndUpdate(req.params.id, {$push: {cards: savedCard._id}});
+        await Deck.findByIdAndUpdate(deckId, {$push: {cards: savedCard._id}});
         
         res.status(201).json(savedCard);
     } catch (err) {
