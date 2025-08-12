@@ -6,10 +6,10 @@ const User = require("../models/userModel");
 
 /**
  * ROUTE: GET /api/decks/
- * DESCRIPTION: Displays information of all decks stored in the Deck model in JSON format
+ * DESCRIPTION: Displays information of all decks stored in the Deck model for the logged-in user in JSON format
  */
 const getDecks = async (req, res) => {
-    const decks = await Deck.find();
+    const decks = await Deck.find({user: req.user.id});
     res.json(decks);
 };
 
@@ -60,14 +60,14 @@ const updateDeck = async (req, res) => {
 
 
 /**
- * ROUTE: POST /api/decks/:id
+ * ROUTE: POST /api/decks/
  * DESCRIPTION: Takes the name and description from the request body and creates a new deck, adding it to the decks collection
  *              in the database
  */
 const createDeck = async (req, res) => {
     try {
         const {name, description} = req.body;
-        const userId = req.params.id;
+        const userId = req.user.id;
         
         // Data validation -- if name is null, then don't accept the request; otherwise, create the deck using the request body values
         if (!name) {
