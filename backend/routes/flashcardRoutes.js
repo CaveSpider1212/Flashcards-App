@@ -1,7 +1,7 @@
 // IMPORTS: express and flashcard controllers
 const express = require("express");
 const {createFlashcard, updateFlashcard, deleteFlashcard} = require("../controllers/flashcardController")
-const validateToken = require("../middleware/authentication");
+const validateToken = require("../middleware/authenticationMiddleware");
 
 // CREATE ROUTER
 const router = express.Router();

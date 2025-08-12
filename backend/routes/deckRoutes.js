@@ -1,7 +1,7 @@
 // IMPORTS: express, deck controller, user authentication
 const express = require("express");
 const {getDecks, getDeckById, createDeck, deleteDeck, updateDeck} = require("../controllers/deckController");
-const validateToken = require("../middleware/authentication");
+const validateToken = require("../middleware/authenticationMiddleware");
 
 // CREATE ROUTER
 const router = express.Router();
