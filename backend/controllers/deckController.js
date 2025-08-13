@@ -9,31 +9,9 @@ const User = require("../models/userModel");
  * DESCRIPTION: Displays information of all decks stored in the Deck model for the logged-in user in JSON format
  */
 const getDecks = async (req, res) => {
-    const decks = await Deck.find({user: req.user.id});
+    const decks = await Deck.find({user: req.user.id}); // shows all decks of the current logged-in user
     res.json(decks);
 };
-
-
-/**
- * ROUTE: GET /api/decks/:id
- * DESCRIPTION: Finds a specific deck by ID and displays the information to the response in JSON format
- */
-const getDeckById = async (req, res) => {
-    try {
-        const deckId = req.params.id;
-        const deck = await Deck.findById(deckId);
-
-        // Validation -- if deck is null (i.e. a deck was not found using deckId), throw a 404 status error
-        if (!deck) {
-            res.status(404);
-            throw("Deck not found!");
-        }
-
-        res.status(201).json(deck);
-    } catch (err) {
-        console.log(err);
-    }
-}
 
 
 /**
@@ -43,8 +21,8 @@ const getDeckById = async (req, res) => {
  */
 const updateDeck = async (req, res) => {
     try {
-        const deckId = req.params.id;
-        const newDeck = await Deck.findByIdAndUpdate(deckId, req.body, {new: true});
+        const {name, description, deckId} = req.body;
+        const newDeck = await Deck.findByIdAndUpdate(deckId, {name: name, description: description}, {new: true});
 
         // Validation -- if newDeck is null (i.e. a deck was not found using deckId), throw a 404 status error
         if (!newDeck) {
@@ -91,8 +69,8 @@ const createDeck = async (req, res) => {
  */
 const deleteDeck = async (req, res) => {
     try {
-        const deckId = req.params.id;
-
+        const deckId = req.body.deckId;
+        
         // Deletes all flashcards associated with the deck
         await Flashcard.deleteMany({deck: deckId});
 
@@ -101,11 +79,11 @@ const deleteDeck = async (req, res) => {
         // Removes the deck from the array of decks of the user
         await User.findByIdAndUpdate(deleteDeck.user, {$pull: {decks: deleteDeck._id}});
 
-        res.status(201).send(`Deleted deck with ID: ${req.params.id}`);
+        res.status(201).send(`Deleted deck with ID: ${deleteDeck._id}`);
     } catch (err) {
         console.log(err);
     }
 };
 
 // EXPORTS: getDecks, getDeckById, updateDeck, createDeck, deleteDeck
-module.exports = {getDecks, getDeckById, updateDeck, createDeck, deleteDeck};
+module.exports = {getDecks, updateDeck, createDeck, deleteDeck};

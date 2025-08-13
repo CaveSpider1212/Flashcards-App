@@ -10,8 +10,7 @@ const Deck = require("../models/deckModel");
  */
 const createFlashcard = async (req, res) => {
     try {
-        const deckId = req.params.id;
-        const {term, definition} = req.body;
+        const {term, definition, deckId} = req.body;
 
         // Data validation -- if a term or definition value passed in is null, then don't accept it; otherwise, create the card
         if (!term || !definition) {
@@ -39,8 +38,8 @@ const createFlashcard = async (req, res) => {
  */
 const updateFlashcard = async (req, res) => {
     try {
-        const cardId = req.params.id;
-        const newCard = await Flashcard.findByIdAndUpdate(cardId, req.body, {new: true});
+        const {term, definition, cardId} = req.body;
+        const newCard = await Flashcard.findByIdAndUpdate(cardId, {term: term, definition: definition}, {new: true});
 
         // Validation -- if newCard is null (i.e. no card was found by cardId in the Flashcard model), then throw a 
         // 404 status error
@@ -63,7 +62,7 @@ const updateFlashcard = async (req, res) => {
  */
 const deleteFlashcard = async (req, res) => {
     try {
-        const cardId = req.params.id;
+        const cardId = req.body.cardId;
         const deleteCard = await Flashcard.findByIdAndDelete(cardId);
 
         // Validation -- if deleteCard is null (i.e. no card was found using cardId in the entire Flashcard model), then throw 
@@ -76,7 +75,7 @@ const deleteFlashcard = async (req, res) => {
         // removes the ID of the deleted card from the array in the Deck model
         await Deck.findByIdAndUpdate(deleteCard.deck, {$pull: {cards: deleteCard._id}});
 
-        res.status(201).send(`Deleted card with ID: ${req.params.id}`);
+        res.status(201).send(`Deleted card with ID: ${deleteCard._id}`);
     } catch (err) {
         console.log(err);
     }

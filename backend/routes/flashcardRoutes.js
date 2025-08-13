@@ -7,9 +7,9 @@ const validateToken = require("../middleware/authenticationMiddleware");
 const router = express.Router();
 
 // ROUTES -- *** require user authentication/login
-router.post("/:id", validateToken, createFlashcard);
-router.put("/:id", validateToken, updateFlashcard);
-router.delete("/:id", validateToken, deleteFlashcard);
+router.post("/", validateToken, createFlashcard);
+router.put("/", validateToken, updateFlashcard);
+router.delete("/", validateToken, deleteFlashcard);
 
 // EXPORTS: router
 module.exports = router;
