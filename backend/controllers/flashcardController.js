@@ -12,6 +12,7 @@ const createFlashcard = async (req, res) => {
     try {
         const deckId = req.params.id;
         const {term, definition} = req.body;
+        const userId = req.user.id;
 
         // Data validation -- if a term or definition value passed in is null, then don't accept it; otherwise, create the card
         if (!term || !definition) {
@@ -19,7 +20,7 @@ const createFlashcard = async (req, res) => {
         }
 
         // creates a new card using the term and definition passed into the request body
-        const newCard = await Flashcard.create({term, definition, deck: deckId});
+        const newCard = await Flashcard.create({term, definition, deck: deckId, user: userId});
         const savedCard = await newCard.save();
         
         // adds the new card's ID to the array of card IDs of the card's deck

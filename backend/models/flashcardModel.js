@@ -20,6 +20,11 @@ const flashcardSchema = mongoose.Schema({
     deck: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Decks"
+    },
+
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
     }
 })
 
