@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken");
 /**
  * DESCRIPTION: Validates that the access token generated when a user logs in is valid; used to determine if user is logged
  *              in or not, which allows them to do certain functions (create deck, create flashcards, etc.)
+ * 
+ * USED IN: All deck and flashcard functions
  */
 const validateToken = async (req, res, next) => {
     const authHeader = req.headers.authorization;
