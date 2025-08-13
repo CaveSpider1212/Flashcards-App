@@ -10,7 +10,8 @@ const Deck = require("../models/deckModel");
  */
 const createFlashcard = async (req, res) => {
     try {
-        const {term, definition, deckId} = req.body;
+        const deckId = req.params.id;
+        const {term, definition} = req.body;
 
         // Data validation -- if a term or definition value passed in is null, then don't accept it; otherwise, create the card
         if (!term || !definition) {
@@ -38,7 +39,8 @@ const createFlashcard = async (req, res) => {
  */
 const updateFlashcard = async (req, res) => {
     try {
-        const {term, definition, cardId} = req.body;
+        const cardId = req.params.id;
+        const {term, definition} = req.body;
         const newCard = await Flashcard.findByIdAndUpdate(cardId, {term: term, definition: definition}, {new: true});
 
         // Validation -- if newCard is null (i.e. no card was found by cardId in the Flashcard model), then throw a 
@@ -62,7 +64,7 @@ const updateFlashcard = async (req, res) => {
  */
 const deleteFlashcard = async (req, res) => {
     try {
-        const cardId = req.body.cardId;
+        const cardId = req.params.id;
         const deleteCard = await Flashcard.findByIdAndDelete(cardId);
 
         // Validation -- if deleteCard is null (i.e. no card was found using cardId in the entire Flashcard model), then throw 
