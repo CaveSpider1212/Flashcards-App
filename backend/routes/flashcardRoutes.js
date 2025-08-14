@@ -1,8 +1,8 @@
 // IMPORTS: express, flashcard controller, authentication/authorization middleware, Flashcard model
 const express = require("express");
 const {createFlashcard, updateFlashcard, deleteFlashcard} = require("../controllers/flashcardController")
-const validateToken = require("../middleware/authenticationMiddleware");
-const isOwner = require("../middleware/authorizationMiddleware");
+const validateToken = require("../middleware/authentication");
+const isOwner = require("../middleware/authorization");
 const Card = require("../models/flashcardModel");
 const Deck = require("../models/deckModel");
 

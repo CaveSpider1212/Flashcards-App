@@ -1,8 +1,8 @@
 // IMPORTS: express, deck controller, authentication/authorization middleware, Deck model
 const express = require("express");
 const {getDecks, getDeckById, createDeck, deleteDeck, updateDeck} = require("../controllers/deckController");
-const validateToken = require("../middleware/authenticationMiddleware");
-const isOwner = require("../middleware/authorizationMiddleware");
+const validateToken = require("../middleware/authentication");
+const isOwner = require("../middleware/authorization");
 const Deck = require("../models/deckModel");
 
 
