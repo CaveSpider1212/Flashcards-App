@@ -1,3 +1,13 @@
+/**
+ * DESCRIPTION: Displays various different JSON messages depending on the error status code passed into the function
+ * 
+ * STATUS CODES:
+ * 400 - Bad request
+ * 401 - Unauthorized
+ * 403 - Forbidden
+ * 404 - Not found
+ * 500 - Internal server error
+ */
 const errorHandler = (err, req, res, next) => {
     const statusCode = err.statusCode !== 200 ? err.statusCode : 500;
 
