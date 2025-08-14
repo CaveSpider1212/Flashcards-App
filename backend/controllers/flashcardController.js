@@ -8,7 +8,7 @@ const Deck = require("../models/deckModel");
  * DESCRIPTION: Creates a card by taking the term and definition passed into the request body and the deck ID passed into the
  *              parameters, and adds it to the corresponding deck
  */
-const createFlashcard = async (req, res) => {
+const createFlashcard = async (req, res, next) => {
     try {
         const deckId = req.params.id;
         const {term, definition} = req.body;
@@ -16,7 +16,9 @@ const createFlashcard = async (req, res) => {
 
         // Data validation -- if a term or definition value passed in is null, then don't accept it; otherwise, create the card
         if (!term || !definition) {
-            res.status(400).json({message: "Term and definition both need to be filled."});
+            const err = new Error("Term and definition are both required");
+            err.statusCode = 400;
+            throw err;
         }
 
         // creates a new card using the term and definition passed into the request body
@@ -28,7 +30,7 @@ const createFlashcard = async (req, res) => {
         
         res.status(201).json(savedCard);
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 };
 
@@ -38,7 +40,7 @@ const createFlashcard = async (req, res) => {
  * DESCRIPTION: Finds the flashcard by the card's ID passed into the request parameters, then updates the term and definition
  *              to the content in the request body
  */
-const updateFlashcard = async (req, res) => {
+const updateFlashcard = async (req, res, next) => {
     try {
         const cardId = req.params.id;
         const {term, definition} = req.body;
@@ -47,13 +49,14 @@ const updateFlashcard = async (req, res) => {
         // Validation -- if newCard is null (i.e. no card was found by cardId in the Flashcard model), then throw a 
         // 404 status error
         if (!newCard) {
-            res.status(404);
-            throw("Card not found!");
+            const err = new Error("Card not found");
+            err.statusCode = 404;
+            throw err;
         }
 
         res.status(200).json(newCard);
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 }
 
@@ -63,7 +66,7 @@ const updateFlashcard = async (req, res) => {
  * DESCRIPTION: Finds the corresponding flashcard by the card's ID passed into the request parameters, deletes it, and removes
  *              it from its deck
  */
-const deleteFlashcard = async (req, res) => {
+const deleteFlashcard = async (req, res, next) => {
     try {
         const cardId = req.params.id;
         const deleteCard = await Flashcard.findByIdAndDelete(cardId);
@@ -71,16 +74,17 @@ const deleteFlashcard = async (req, res) => {
         // Validation -- if deleteCard is null (i.e. no card was found using cardId in the entire Flashcard model), then throw 
         // a 404 status error
         if (!deleteCard) {
-            res.status(404);
-            throw("Card not found!");
+            const err = new Error("Card not found");
+            err.statusCode = 404;
+            throw err;
         }
         
         // removes the ID of the deleted card from the array in the Deck model
         await Deck.findByIdAndUpdate(deleteCard.deck, {$pull: {cards: deleteCard._id}});
 
-        res.status(201).send(`Deleted card with ID: ${deleteCard._id}`);
+        res.status(200).send(`Deleted card with ID: ${deleteCard._id}`);
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 };
 

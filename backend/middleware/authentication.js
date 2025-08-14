@@ -13,7 +13,9 @@ const validateToken = async (req, res, next) => {
 
     // Checks if either authHeader doesn't exist or if it does but does not start with "Bearer"
     if (!authHeader || !authHeader.startsWith("Bearer")) {
-        res.status(401).json({message: "No token provided"});
+        const err = new Error("No token provided");
+        err.statusCode = 401;
+        throw err;
     }
 
     // Gets the access token from authHeader
@@ -21,7 +23,7 @@ const validateToken = async (req, res, next) => {
 
     try {
         // Verifies that the access token is valid, and if so, sets the request user to the user associated with the token (decoded)
-        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET); // throws an error if verify is unsuccessful
         req.user = decoded.user;
         next();
     } catch (err) {
