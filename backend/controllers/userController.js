@@ -5,6 +5,15 @@ const jwt = require("jsonwebtoken");
 
 
 /**
+ * ROUTE: GET /api/users/current
+ * DESCRIPTION: Displays the current user
+ */
+const currentUser = async (req, res) => {
+    res.json(req.user);
+}
+
+
+/**
  * ROUTE: POST /api/users/register
  * DESCRIPTION: Register a user by taking the username and password values in the request body, checking if a user already exists
  *              with that username, and if not, hashes the password and creates a user in the database
@@ -79,4 +88,4 @@ const loginUser = async (req, res, next) => {
 }
 
 
-module.exports = {registerUser, loginUser};
+module.exports = {currentUser, registerUser, loginUser};
