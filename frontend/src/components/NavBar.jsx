@@ -12,14 +12,15 @@ function NavBar () {
      */
     return (
         <nav>
-            <div className="app-title">
-                <p>Flashcards App</p>
-            </div>
-
-            <div className="links-container">
+            <div className="left-side">
+                <p className="app-title">Flashcards App</p>
                 <Link to="/" className="links">Decks</Link>
                 <Link to="/manage/0" className="links">Manage Deck</Link>
                 <Link to="/study/0" className="links">Study</Link>
+            </div>
+
+            <div className="right-side">
+                <Link to="/account" className="links account">Login/Register</Link>
             </div>
         </nav>
     )
