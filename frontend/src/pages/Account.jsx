@@ -48,7 +48,8 @@ function Account () {
         try {
             const user = await login(usernameLogin, passwordLogin);
             localStorage.setItem("token", user.token);
-            navigate('/')
+            navigate('/');
+            window.location.reload(); // refreshes the page after logging in and navigating pages
         } catch (err) {
             console.error(err);
         }
@@ -68,6 +69,7 @@ function Account () {
                 const loginUser = await login(registeredUser.username, passwordRegister);
                 localStorage.setItem("token", loginUser.token);
                 navigate('/');
+                window.location.reload(); // refreshes the page after registering and navigating pages
             }
         } catch (err) {
             console.error(err);
