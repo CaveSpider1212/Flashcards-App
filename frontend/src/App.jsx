@@ -3,6 +3,7 @@ import NavBar from "./components/NavBar"
 import ManageDeck from './pages/ManageDeck'
 import Decks from "./pages/Decks"
 import Study from "./pages/Study"
+import Account from "./pages/Account"
 import {Routes, Route} from "react-router-dom"
 
 /**
@@ -24,6 +25,7 @@ function App() {
           <Route path="/" element={<Decks />} />
           <Route path="/manage/:deckId" element={<ManageDeck />} />
           <Route path="/study/:deckId" element={<Study />} />
+          <Route path="/account" element={<Account />} />
         </Routes>
       </main>
     </div>

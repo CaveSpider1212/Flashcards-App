@@ -1,0 +1,29 @@
+.login-user, .register-user, .logout-user {
+    margin-left: 15px;
+    margin-top: 10px;
+    margin-bottom: 50px;
+}
+
+.user-input, .pass-input, .login-input, .register-input, .logout-input {
+    margin-right: 5px;
+    margin-bottom: 5px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.user-input, .pass-input {
+    border: 2px solid black;
+    display: block;
+}
+
+.login-input, .register-input, .logout-input {
+    border: 1px solid black;
+}
+
+.login-input, .register-input {
+    background-color: #72f78e;
+}
+
+.logout-input {
+    background-color: #f77272;
+}
