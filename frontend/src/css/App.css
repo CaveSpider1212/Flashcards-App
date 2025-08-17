@@ -14,3 +14,8 @@ input {
 select {
     font-family: appFont;
 }
+
+.auth-message {
+    text-align: center;
+    font-style: italic;
+}
