@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Flashcard from "../components/Flashcard";
+import { getCurrentUser } from "../api";
 import "../css/Study.css"
 
 /**
@@ -18,6 +19,7 @@ function Study () {
     const [currentCard, setCurrentCard] = useState([]); // represents the current card being shown on the screen, set to an empty array [] by default
     const [index, setIndex] = useState(0); // represents the index of the card shown on the screen, set to 0 by default
     const [isDeckSelected, setIsDeckSelected] = useState(false); // represents whether a deck has been selected or not, set to false by default
+    const [user, setUser] = useState(null); // represents the user logged in, set to null by default
 
 
     /**
@@ -32,19 +34,14 @@ function Study () {
      * Runs only once (indicated by the empty array [])
      */
     useEffect(() => {
-        const maxDeckNum = parseInt(localStorage.getItem("maxDeckNum"));
-        const loadedDecks = [];
+        const token = localStorage.getItem("token");
 
-        for (let currentDeckNum = 1; currentDeckNum <= maxDeckNum; currentDeckNum++) {
-            const currentDeck = JSON.parse(localStorage.getItem(`deck${currentDeckNum}`));
-            const currentDeckName = localStorage.getItem(`deck${currentDeckNum}name`);
-
-            if (currentDeck && currentDeckName) {
-                loadedDecks.push({currentDeckName, currentDeck, currentDeckNum});
-            }
+        if (token) {
+            getCurrentUser(token).then((data) => setUser(data));
         }
-
-        setDecks(loadedDecks);
+        else {
+            setUser(null);
+        }
     }, []);
 
 
@@ -145,6 +142,10 @@ function Study () {
      */
     return (
         <>
+        {user == null ? (
+            <p className="auth-message">Must be logged in to study decks!</p>
+        ) : (
+            <>
             <div className="select-container">
                 <select name="decks" defaultValue="" onChange={(e) => selectDeck(e.target.value)} className="study-select-input" >
                     <option value="" disabled hidden>--Please choose a deck to study--</option>
@@ -185,6 +186,9 @@ function Study () {
                     </div>
                 )}
             </div>
+            </>
+        )}
+            
         </>
     )
 

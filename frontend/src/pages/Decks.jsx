@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import DeckView from "../components/DeckView";
 import "../css/Decks.css"
+import { getCurrentUser } from "../api";
 
 /**
  * Function for the "Decks" page
@@ -11,8 +12,8 @@ function Decks () {
     /**
      * State variables
      */
-    const [decks, setDecks] = useState([]); // represents the array of decks pulled from localStorage, set to an empty array by default
-    const [isDeckThere, setIsDeckThere] = useState(false); // represents whether a deck is shown on the "Decks" page or not, set to false by default
+    const [user, setUser] = useState(null); // represents the user logged in, set to null by default
+    const [decks, setDecks] = useState([]); // represents the array of decks of the user, set to an empty array by default
 
 
     /**
@@ -21,19 +22,14 @@ function Decks () {
      * Runs only once (indicated by the empty array [])
      */
     useEffect(() => {
-        const maxDeckNum = parseInt(localStorage.getItem("maxDeckNum"));
-        const loadedDecks = [];
+        const token = localStorage.getItem("token");
 
-        for (let currentDeckNum = 1; currentDeckNum <= maxDeckNum; currentDeckNum++) {
-            const currentDeck = JSON.parse(localStorage.getItem(`deck${currentDeckNum}`));
-            const currentDeckName = localStorage.getItem(`deck${currentDeckNum}name`);
-
-            if (currentDeck && currentDeckName) {
-                loadedDecks.push({currentDeckName, currentDeck, currentDeckNum});
-            }
+        if (token) {
+            getCurrentUser(token).then((data) => setUser(data));
         }
-
-        setDecks(loadedDecks);
+        else {
+            setUser(null);
+        }
     }, []);
 
 
@@ -42,15 +38,21 @@ function Decks () {
      */
     return (
         <>
-            {decks.length == 0 && ( // shows the message below if there are no decks loaded (i.e. the length of the decks state array is 0)
-                <p className="decks-message"><i>Create a deck in the "Manage Deck" menu!</i></p>
+        {user == null ? (
+            <p className="auth-message">Must be logged in to view decks!</p>
+        ) : (
+            <>
+            {decks.length == 0 && (
+                <p className="decks-message">Create a deck in the "Manage Deck" menu!</p>
             )}
-            
+
             <div>
                 {decks.map((deck, index) => (
                     <DeckView key={index} currentDeck={deck.currentDeck} deckName={deck.currentDeckName} deckNumber={parseInt(deck.currentDeckNum)} />
                 ))}
             </div>
+            </>
+        )}
         </>
     )
 

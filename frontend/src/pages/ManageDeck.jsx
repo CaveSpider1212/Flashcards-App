@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import Flashcard from "../components/Flashcard"
+import { getCurrentUser } from "../api";
 import "../css/ManageDeck.css";
 
 /**
@@ -18,6 +19,7 @@ function ManageDeck () {
     const [name, setName] = useState(''); // represents the value shown in the Deck Name text input, set to an empty string '' by default
     const [editTerm, setEditTerm] = useState(''); // represents the value shown in the Term text input when editing a card, set to an empty string '' by default
     const [editDef, setEditDef] = useState(''); // represents the value shown in the Definition text input when editing a card, set to an empty string '' by default
+    const [user, setUser] = useState(null); // represents the user logged in, set to null by default
 
 
     /**
@@ -37,6 +39,23 @@ function ManageDeck () {
         var maxDeckNum = localStorage.getItem("maxDeckNum");
     }
 
+
+    /**
+     * Reads in each deck and deck name from the localStorage and pushes the name, deck, and number into the loadedDecks array
+     * The loadedDecks array is set as the decks state array
+     * Runs only once (indicated by the empty array [])
+     */
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if (token) {
+            getCurrentUser(token).then((data) => setUser(data));
+        }
+        else {
+            setUser(null);
+        }
+    }, []);
+    
 
     /**
      * Reads the corresponding deck and deck name from the localStorage, and stores it in the loadedDecks and loadedName variables
@@ -157,6 +176,10 @@ function ManageDeck () {
      */
     return (
         <>
+        {user == null ? (
+            <p className="auth-message">Must be logged in to manage decks!</p>
+        ) : (
+            <>
             <div className="manage-deck-inputs">
                 <div>
                     <input type="text" placeholder="Deck name" value={name} onChange={(e) => setName(e.target.value)} required="required" className="deck-name-input" />
@@ -201,6 +224,8 @@ function ManageDeck () {
                     </div>
                 ))}
             </div>
+            </>
+        )}
         </>
     )
 
