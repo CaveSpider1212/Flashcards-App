@@ -1,6 +1,6 @@
 import {useState, useEffect} from "react"
 import { useNavigate } from "react-router-dom";
-import {login, register, getCurrentUser} from "../api"
+import {login, register, currentUser} from "../api"
 import "../css/Account.css"
 
 /**
@@ -25,13 +25,13 @@ function Account () {
     
     /**
      * Reads the token from the local storage
-     * If found, sets the user state variable to the user asssociated with the token using getCurrentUser() function
+     * If found, sets the user state variable to the user asssociated with the token using currentUser() function
      */
     useEffect(() => {
         const token = localStorage.getItem("token");
 
         if (token) {
-            getCurrentUser(token).then((data) => setUser(data));
+            currentUser(token).then((data) => setUser(data));
         }
         else {
             setUser(null);

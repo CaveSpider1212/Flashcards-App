@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Flashcard from "../components/Flashcard";
-import { getCurrentUser } from "../api";
+import { currentUser } from "../api";
 import "../css/Study.css"
 
 /**
@@ -29,15 +29,14 @@ function Study () {
 
 
     /**
-     * Reads in each deck and deck name from the localStorage and pushes the name, deck, and number into the loadedDecks array
-     * The loadedDecks array is set as the decks state array
-     * Runs only once (indicated by the empty array [])
+     * Reads the token from the local storage
+     * If found, sets the user state variable to the user asssociated with the token using currentUser() function
      */
     useEffect(() => {
         const token = localStorage.getItem("token");
 
         if (token) {
-            getCurrentUser(token).then((data) => setUser(data));
+            currentUser(token).then((data) => setUser(data));
         }
         else {
             setUser(null);
