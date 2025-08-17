@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import { useState, useEffect } from "react";
-import { getCurrentUser } from "../api";
+import { currentUser } from "../api";
 import "../css/NavBar.css";
 
 /**
@@ -22,7 +22,7 @@ function NavBar () {
         const token = localStorage.getItem("token");
 
         if (token) {
-            getCurrentUser(token).then((data) => setUser(data));
+            currentUser(token).then((data) => setUser(data));
         }
         else {
             setUser(null);
