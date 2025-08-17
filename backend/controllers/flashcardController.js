@@ -4,6 +4,17 @@ const Deck = require("../models/deckModel");
 
 
 /**
+ * ROUTE: GET /api/flashcards/:id
+ * DESCRIPTION: Shows all cards associated with a deck using the deckId passed in the request parameters
+ */
+const getFlashcards = async (req, res, next) => {
+    const deckId = req.params.id;
+    const decks = await Decks.find({deck: deckId});
+    res.status(200).json(decks);
+}
+
+
+/**
  * ROUTE: POST /api/flashcards/:id
  * DESCRIPTION: Creates a card by taking the term and definition passed into the request body and the deck ID passed into the
  *              parameters, and adds it to the corresponding deck
@@ -89,4 +100,4 @@ const deleteFlashcard = async (req, res, next) => {
 };
 
 // EXPORTS: createFlashcard, updateFlashcard, deleteFlashcard
-module.exports = {createFlashcard, updateFlashcard, deleteFlashcard};
+module.exports = {getFlashcards, createFlashcard, updateFlashcard, deleteFlashcard};

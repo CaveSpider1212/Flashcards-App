@@ -1,6 +1,6 @@
 // IMPORTS: express, flashcard controller, authentication/authorization middleware, Flashcard model
 const express = require("express");
-const {createFlashcard, updateFlashcard, deleteFlashcard} = require("../controllers/flashcardController")
+const {getFlashcards, createFlashcard, updateFlashcard, deleteFlashcard} = require("../controllers/flashcardController")
 const validateToken = require("../middleware/authentication");
 const isOwner = require("../middleware/authorization");
 const Card = require("../models/flashcardModel");
@@ -10,6 +10,7 @@ const Deck = require("../models/deckModel");
 const router = express.Router();
 
 // ROUTES -- *** require user authentication/login
+router.get("/:id", validateToken, getFlashcards);
 router.post("/:id", validateToken, isOwner(Deck), createFlashcard); // verifies the logged-in user owns the deck being modified
 router.put("/:id", validateToken, isOwner(Card), updateFlashcard); // verifies the logged-in user owns the card being modified
 router.delete("/:id", validateToken, isOwner(Card), deleteFlashcard); // verifies the logged-in user owns the card being modified
