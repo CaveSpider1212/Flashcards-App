@@ -5,15 +5,27 @@
     margin-top: 10px;
 }
 
-.deck-name-input, .term-input, .definition-input, .edit-term-input, .edit-definition-input, .save-input, .add-term-input, .edit-card-input, .delete-card-input, .save-card-input {
+.deck-name-input, .deck-description-input, .term-input, .definition-input, .edit-term-input, .edit-definition-input, .save-input, .add-term-input, .edit-card-input, .delete-card-input, .save-card-input {
     margin-right: 5px;
     margin-bottom: 5px;
     padding: 5px;
     border-radius: 5px;
 }
 
-.deck-name-input, .term-input, .definition-input {
+.deck-name-input, .deck-description-input, .term-input, .definition-input {
     border: 2px solid black;
+}
+
+.deck-name-input {
+    display: block;
+}
+
+.deck-description-input {
+    width: 400px;
+}
+
+.card-inputs {
+    padding-top: 20px;
 }
 
 .save-input, .add-term-input {

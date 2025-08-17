@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import Flashcard from "../components/Flashcard"
-import { currentUser } from "../api";
+import { currentUser, createDeck, createCard } from "../api";
 import "../css/ManageDeck.css";
 
 /**
@@ -17,6 +17,7 @@ function ManageDeck () {
     const [term, setTerm] = useState(''); // represents the value shown in the Term text input, set to an empty string '' by default
     const [definition, setDefinition] = useState(''); // represents the value shown in the Definition text input, set to an empty string '' by default
     const [name, setName] = useState(''); // represents the value shown in the Deck Name text input, set to an empty string '' by default
+    const [description, setDescription] = useState(''); // represents the value shown in the Deck Description text input, set to an epty string '' by default
     const [editTerm, setEditTerm] = useState(''); // represents the value shown in the Term text input when editing a card, set to an empty string '' by default
     const [editDef, setEditDef] = useState(''); // represents the value shown in the Definition text input when editing a card, set to an empty string '' by default
     const [user, setUser] = useState(null); // represents the user logged in, set to null by default
@@ -87,20 +88,17 @@ function ManageDeck () {
 
 
     /**
-     * Saves the current deck to the localStorage (does slightly different things depending on deckId value, whether user is creating a new deck or editing an existing one)
-     * Navigates to the "Decks" page after function is done executing
-     * Called when the "Save Deck" button is pressed
+     * Gets the user token from the local storage, and creates a deck with the name, description, and token using createDeck()
+     * Runs createCard() to create a flashcard in the database using the card's term, definition, deck ID, and user token
+     * Navigates to the decks page when successful
      */
-    const saveDeck = () => {
-        if (deckId == 0) { // if the deckId is 0 (i.e. user is creating a new deck), add the new deck and name to the localStorage
-            localStorage.setItem("maxDeckNum", ++maxDeckNum);
-            localStorage.setItem(`deck${maxDeckNum}`, JSON.stringify(cards));
-            localStorage.setItem(`deck${maxDeckNum}name`, name);
-        }
-        else { // if the deckID is NOT 0 (i.e. user is editing an existing deck), update the localStorage with the new deck/name
-            localStorage.setItem(`deck${deckId}`, JSON.stringify(cards));
-            localStorage.setItem(`deck${deckId}name`, name);
-        }
+    const saveDeck = async () => {
+        const token = localStorage.getItem("token");
+        const deck = await createDeck(name, description, token);
+
+        cards.forEach((card) => {
+            createCard(card.term, card.definition, deck._id, token);
+        })
 
         navigate('/');
     }
@@ -182,9 +180,10 @@ function ManageDeck () {
             <div className="manage-deck-inputs">
                 <div>
                     <input type="text" placeholder="Deck name" value={name} onChange={(e) => setName(e.target.value)} required="required" className="deck-name-input" />
+                    <input type="text" placeholder="Deck description" value={description} onChange={(e) => setDescription(e.target.value)} className="deck-description-input" />
                 </div>
 
-                <div>
+                <div className="card-inputs">
                     <input type="text" placeholder="Term" value={term} onChange={(e) => setTerm(e.target.value)} required="required" className="term-input" />
                     <input type="text" placeholder="Definition" value = {definition} onChange={(e) => setDefinition(e.target.value)} required = "required" className="definition-input" />
                     <input type="submit" value="Add Card" onClick={addCard} className="add-term-input" />
