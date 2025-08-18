@@ -9,7 +9,7 @@ const Deck = require("../models/deckModel");
  */
 const getFlashcards = async (req, res, next) => {
     const deckId = req.params.id;
-    const decks = await Decks.find({deck: deckId});
+    const decks = await Deck.find({deck: deckId});
     res.status(200).json(decks);
 }
 
