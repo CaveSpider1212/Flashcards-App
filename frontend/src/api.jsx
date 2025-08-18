@@ -74,6 +74,15 @@ function getDecks(token) {
     });
 }
 
+/**
+ * Calls the GET /api/decks/:id route
+ * Returns the specific deck associated with the deck ID passed into the function
+ */
+function getDeckById(deckId) {
+    return request(`/decks/${deckId}`, {
+        method: "GET"
+    });
+}
 
 /**
  * Calls the POST /api/decks route
@@ -179,6 +188,7 @@ export {
     login,
     register,
     getDecks,
+    getDeckById,
     createDeck,
     updateDeck,
     deleteDeck,
