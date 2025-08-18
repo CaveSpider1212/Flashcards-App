@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import DeckView from "../components/DeckView";
 import "../css/Decks.css"
-import { currentUser } from "../api";
+import { currentUser, getDecks, getCards } from "../api";
 
 /**
  * Function for the "Decks" page
@@ -25,6 +25,9 @@ function Decks () {
 
         if (token) {
             currentUser(token).then((data) => setUser(data));
+            getDecks(token).then((data) => {
+                setDecks(data);
+            })
         }
         else {
             setUser(null);
@@ -46,8 +49,8 @@ function Decks () {
             )}
 
             <div>
-                {decks.map((deck, index) => (
-                    <DeckView key={index} currentDeck={deck.currentDeck} deckName={deck.currentDeckName} deckNumber={parseInt(deck.currentDeckNum)} />
+                {decks.map((deck, index) => (   
+                    <DeckView key={index} deckId={deck._id} />
                 ))}
             </div>
             </>
