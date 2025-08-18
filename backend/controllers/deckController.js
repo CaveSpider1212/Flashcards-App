@@ -45,8 +45,8 @@ const getDeckById = async (req, res, next) => {
 const updateDeck = async (req, res, next) => {
     try {
         const deckId = req.params.id;
-        const {name, description} = req.body;
-        const newDeck = await Deck.findByIdAndUpdate(deckId, {name: name, description: description}, {new: true});
+        const {name} = req.body;
+        const newDeck = await Deck.findByIdAndUpdate(deckId, {name: name}, {new: true});
 
         // Validation -- if newDeck is null (i.e. a deck was not found using deckId), throw a 404 status error
         if (!newDeck) {
@@ -69,7 +69,7 @@ const updateDeck = async (req, res, next) => {
  */
 const createDeck = async (req, res, next) => {
     try {
-        const {name, description} = req.body;
+        const {name} = req.body;
         const userId = req.user.id;
         
         // Data validation -- if name is null, then don't accept the request; otherwise, create the deck using the request body values
@@ -80,7 +80,7 @@ const createDeck = async (req, res, next) => {
         }
 
         // Creates a new deck, and adds it to the array of deck ID's of the user
-        const newDeck = await Deck.create({name, description, user: userId});
+        const newDeck = await Deck.create({name, user: userId});
         await User.findByIdAndUpdate(userId, {$push: {decks: newDeck._id}});
 
         res.status(201).json(newDeck);

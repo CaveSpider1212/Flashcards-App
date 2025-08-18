@@ -14,10 +14,6 @@ const deckSchema = mongoose.Schema({
         required: true
     },
 
-    description: {
-        type: String
-    },
-
     cards: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Cards"

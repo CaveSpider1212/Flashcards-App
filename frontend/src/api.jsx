@@ -88,10 +88,10 @@ function getDeckById(deckId) {
  * Calls the POST /api/decks route
  * Returns the newly-created deck using the deck name, description, and user token passed into the function
  */
-function createDeck(name, description, token) {
+function createDeck(name, token) {
     return request("/decks", {
         method: "POST",
-        body: JSON.stringify({name, description}),
+        body: JSON.stringify({name}),
         headers: {
             "Authorization": `Bearer ${token}`
         }
@@ -103,10 +103,10 @@ function createDeck(name, description, token) {
  * Calls the PUT /api/decks/:id route
  * Returns the updated deck using the deck name, description, and user token passed into the function
  */
-function updateDeck(name, description, deckId, token) {
+function updateDeck(name, deckId, token) {
     return request(`/decks/${deckId}`, {
         method: "PUT",
-        body: JSON.stringify({name, description}),
+        body: JSON.stringify({name}),
         headers: {
             "Authorization": `Bearer ${token}`
         }
