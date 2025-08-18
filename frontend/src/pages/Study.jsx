@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Flashcard from "../components/Flashcard";
-import { currentUser } from "../api";
+import { currentUser, getDecks, getCards } from "../api";
 import "../css/Study.css"
 
 /**
@@ -37,6 +37,10 @@ function Study () {
 
         if (token) {
             currentUser(token).then((data) => setUser(data));
+
+            getDecks(token).then((data) => {
+                setDecks(data);
+            });
         }
         else {
             setUser(null);
@@ -91,10 +95,10 @@ function Study () {
      */
     const selectDeck = (selectedValue) => {
         decks.forEach((deck) => {
-            if (deck.currentDeckName === selectedValue) {
+            if (deck.name === selectedValue) {
                 // if the name of the current deck in the forEach loop is the same as the value selected, set the selectedDeck to the current deck
-                setSelectedDeck(deck.currentDeck);
-                setSelectedName(deck.currentDeckName);
+                getCards(deck._id).then((data) => setSelectedDeck(data));
+                setSelectedName(deck.name);
             }
         })
     }
@@ -151,8 +155,8 @@ function Study () {
 
                     {decks.map((deck, index) => { // in the Select dropdown, shows the deck names for each of the decks loaded from the localStorage
                         return (
-                            <option key={index} value={deck.currentDeckName}>
-                                {deck.currentDeckName}
+                            <option key={index} value={deck.name}>
+                                {deck.name}
                             </option>
                         )
                     })}
