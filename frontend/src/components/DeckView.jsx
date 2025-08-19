@@ -1,7 +1,7 @@
 import Flashcard from "./Flashcard"
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getDeckById, getCards } from "../api";
+import { getDeckById, getCards, deleteDeck } from "../api";
 import "../css/DeckView.css"
 
 /**
@@ -56,15 +56,13 @@ function DeckView ({deckId}) {
 
 
     /**
-     * Removes a deck from the local storage using the deckNumber ID value passed into this component
-     * Reloads the screen afterwards
-     * Called when the "Delete" button for a deck is pressed
+     * Gets the user token from the local storage
+     * Deletes the component's deck using the deleteDeck() function, which takes in the deckId argument and user token as parameters
+     * Reloads the page when successful
      */
-    const deleteDeck = () => {
-        /*
-        localStorage.removeItem(`deck${deckNumber}`);
-        localStorage.removeItem(`deck${deckNumber}name`);
-        */
+    const deleteDeckComponent = () => {
+        const token = localStorage.getItem("token");
+        deleteDeck(deckId, token);
 
         window.location.reload(); // refreshes the page after removing deck (to make sure it was actually removed on the screen)
     }
@@ -93,7 +91,7 @@ function DeckView ({deckId}) {
             <div className="bottom">
                 <input type="submit" value="Edit" onClick={handleEdit} className="edit-button" />
                 <input type="submit" value="Study" onClick={handleStudy} className="study-button" />
-                <input type="submit" value="Delete" onClick={deleteDeck} className="delete-button" />
+                <input type="submit" value="Delete" onClick={deleteDeckComponent} className="delete-button" />
             </div>
         </div>
     )
