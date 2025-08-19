@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import Flashcard from "../components/Flashcard"
-import { currentUser, createDeck, createCard } from "../api";
+import { currentUser, createDeck, createCard, getDeckById, getCards, updateCard, updateDeck, deleteCard } from "../api";
 import "../css/ManageDeck.css";
 
 /**
@@ -14,10 +14,11 @@ function ManageDeck () {
      * State variables
      */
     const [cards, setCards] = useState([]); // represents the array of cards that are part of the deck being created/edited
+    // const [existingCards, setExistingCards] = useState([]); // represents the array of cards that were already in the deck before being modified, set to an empty array [] by default (only for updating)
+    const [deck, setDeck] = useState([]); // represents the deck the user is editing, set to an empty array [] by default
     const [term, setTerm] = useState(''); // represents the value shown in the Term text input, set to an empty string '' by default
     const [definition, setDefinition] = useState(''); // represents the value shown in the Definition text input, set to an empty string '' by default
     const [name, setName] = useState(''); // represents the value shown in the Deck Name text input, set to an empty string '' by default
-    const [description, setDescription] = useState(''); // represents the value shown in the Deck Description text input, set to an epty string '' by default
     const [editTerm, setEditTerm] = useState(''); // represents the value shown in the Term text input when editing a card, set to an empty string '' by default
     const [editDef, setEditDef] = useState(''); // represents the value shown in the Definition text input when editing a card, set to an empty string '' by default
     const [user, setUser] = useState(null); // represents the user logged in, set to null by default
@@ -28,17 +29,6 @@ function ManageDeck () {
      */
     const {deckId} = useParams(); // reads the number parameter from the URL (used to determine whether user is editing a deck or not)
     const navigate = useNavigate(); // sets up the navigation to different pages
-
-
-    /**
-    * Reads in the "maxDeckNum" value from the localStorage
-    * Sets the maxDeckNum variable to the value read in, if applicaple, otherwise sets it to 0
-    */
-    if (localStorage.getItem("maxDeckNum") == null) {
-        var maxDeckNum = 0;
-    } else {
-        var maxDeckNum = localStorage.getItem("maxDeckNum");
-    }
 
 
     /**
@@ -63,14 +53,20 @@ function ManageDeck () {
      * Runs each time deckId changes, indicated by [deckId]
      */
     useEffect(() => {
-        if (deckId != 0) { // if the deckId (number read from URL) is not 0 (i.e. user is editing an existing deck), then get the corresponding deck and name from the localStorage
-            const loadedDecks = JSON.parse(localStorage.getItem(`deck${deckId}`));
-            const loadedName = localStorage.getItem(`deck${deckId}name`);
-
-            setCards(loadedDecks);
-            setName(loadedName);
+        if (deckId != 0) { // if the deckId (number read from URL) is not 0 (i.e. user is editing an existing deck), then get the corresponding deck from the database
+            getDeckById(deckId).then((data) => setDeck(data));
+            getCards(deckId).then((data) => setCards(data));
         }
     }, [deckId]);
+
+
+    /**
+     * Sets the name state variable to the deck state array's name
+     * Runs each time deck changes, indicated by [deck]
+     */
+    useEffect(() => {
+        setName(deck.name);
+    }, [deck])
 
 
     /**
@@ -88,17 +84,57 @@ function ManageDeck () {
 
 
     /**
-     * Gets the user token from the local storage, and creates a deck with the name, description, and token using createDeck()
-     * Runs createCard() to create a flashcard in the database using the card's term, definition, deck ID, and user token
-     * Navigates to the decks page when successful
+     * Gets the user token from the local storage
+     * If user is creating a new deck, then create the deck first and then create each card after that, adding it to the deck
+     * If user is editing an existing deck, then find the new, deleted, and updated cards, and either create a card (and add to deck),
+     *      delete a card, or update a card
+     * Navigates to the Decks page when successful
      */
     const saveDeck = async () => {
         const token = localStorage.getItem("token");
-        const deck = await createDeck(name, description, token);
 
-        cards.forEach((card) => {
-            createCard(card.term, card.definition, deck._id, token);
-        })
+        if (deckId == 0) { // if the user is creating a new deck (not editing an existing one), then create a new deck and cards
+            const createdDeck = await createDeck(name, token);
+
+            // for each card in the cards state array, create a new card in the database using the term, definition, deck ID, and token
+            cards.forEach((card) => {
+                createCard(card.term, card.definition, createdDeck._id, token);
+            });
+        }
+        else { // if the user is editing an existing deck, then update the deck and cards
+            const updatedDeck = await updateDeck(name, deck._id, token); // updates the deck name
+            const existingCards = await getCards(deck._id) // gets the array of cards already in the deck before being modified
+
+            // if a card is in cards but not existingCards, then it is a new card (needs to be created in the database)
+            const newCards = cards.filter((card) => 
+                !existingCards.some((existingCard) => existingCard._id === card._id)
+            );
+            
+            // if a card is in existingCards but not in cards, then that card was deleted (needs to be deleted from database)
+            const deletedCards = existingCards.filter((existingCard) => 
+                !cards.some((card) => existingCard._id === card._id)
+            );
+
+            // if a card is both in existingCards and cards, then it was either updated or unchanged (update these cards in the database)
+            const updatedCards = cards.filter((card) => 
+                existingCards.some((existingCard) => existingCard._id === card._id)
+            );
+
+            // for each new card, create a new flashcard in the database using its term, definition, deck ID, and user token
+            newCards.forEach((card) => {
+                createCard(card.term, card.definition, updatedDeck._id, token);
+            });
+
+            // for each deleted card, delete the corresponding flashcard from the database using the card's ID and user token
+            deletedCards.forEach((card) => {
+                deleteCard(card._id, token);
+            });
+
+            // for each card updated or unchanged, update it in the database
+            updatedCards.forEach((card) => {
+                updateCard(card.term, card.definition, card._id, token);
+            })
+        }
 
         navigate('/');
     }
@@ -133,7 +169,7 @@ function ManageDeck () {
      * Calls toggleEdit(), which sets the card's editing value to false
      * Called when the "Save card" button is pressed
      */
-    const editCard = (editIndex) => {
+    const editFlashcard = (editIndex) => {
         const updatedCards = [...cards];
         updatedCards[editIndex].term = editTerm;
         updatedCards[editIndex].definition = editDef;
@@ -151,7 +187,7 @@ function ManageDeck () {
      * Sets the cards state array to the updatedCards array
      * Called when the "Delete" button under a card is pressed
      */
-    const deleteCard = (deleteIndex) => {
+    const deleteFlashcard = (deleteIndex) => {
         const updatedCards = [];
 
         cards.map((card, index) => {
@@ -180,7 +216,6 @@ function ManageDeck () {
             <div className="manage-deck-inputs">
                 <div>
                     <input type="text" placeholder="Deck name" value={name} onChange={(e) => setName(e.target.value)} required="required" className="deck-name-input" />
-                    <input type="text" placeholder="Deck description" value={description} onChange={(e) => setDescription(e.target.value)} className="deck-description-input" />
                 </div>
 
                 <div className="card-inputs">
@@ -209,14 +244,14 @@ function ManageDeck () {
                             <div>
                                 <input type="text" value={editTerm} onChange={(e) => setEditTerm(e.target.value)} className="edit-term-input" />
                                 <input type="text" value={editDef} onChange={(e) => setEditDef(e.target.value)} className="edit-definition-input" />
-                                <input type="submit" value="Save card" onClick={() => editCard(index)} className="save-card-input" />
+                                <input type="submit" value="Save card" onClick={() => editFlashcard(index)} className="save-card-input" />
                             </div>
                         ) : (
                             <div>
                                 <Flashcard term={card.term} definition={card.definition} cardType="card createdeck" />
 
                                 <input type="submit" value="Edit" onClick={() => toggleEdit(index)} className="edit-card-input" />
-                                <input type="submit" value="Delete" onClick={() => deleteCard(index)} className="delete-card-input" />
+                                <input type="submit" value="Delete" onClick={() => deleteFlashcard(index)} className="delete-card-input" />
                             </div>
                         )}
                     </div>
