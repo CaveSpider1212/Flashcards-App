@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Flashcard from "../components/Flashcard";
-import { currentUser, getDecks, getCards } from "../api";
+import { currentUser, getDecks, getCards, getDeckById } from "../api";
 import "../css/Study.css"
 
 /**
@@ -54,14 +54,13 @@ function Study () {
      * Runs every time deckId changes, shown by [deckId]
      */
     useEffect(() => {
-        if (deckId != 0) { // if the deckId (number read from URL) is not 0 (i.e. user is editing an existing deck), then get the corresponding deck and name from the localStorage
-            const deck = JSON.parse(localStorage.getItem(`deck${deckId}`));
-            setSelectedDeck(deck);
-
-            const deckName = localStorage.getItem(`deck${deckId}name`);
-            setSelectedName(deckName);
+        if (deckId != 0) { // if the deckId (number read from URL) is not 0 (i.e. user navigated through this page by clicking on a "Study" button), then get the corresponding cards and deck from the database
+            getDeckById(deckId).then((data) => setSelectedName(data.name));
+            getCards(deckId).then((data) => setSelectedDeck(data));
         }
     }, [deckId]);
+
+
 
 
     /**
