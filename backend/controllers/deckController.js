@@ -48,6 +48,13 @@ const updateDeck = async (req, res, next) => {
         const {name} = req.body;
         const newDeck = await Deck.findByIdAndUpdate(deckId, {name: name}, {new: true});
 
+        // Data validation -- if name is null, then don't accept the request; otherwise, create the deck using the request body values
+        if (!name) {
+            const err = new Error("Name is required");
+            err.statusCode = 400;
+            throw err;
+        }
+        
         // Validation -- if newDeck is null (i.e. a deck was not found using deckId), throw a 404 status error
         if (!newDeck) {
             const err = new Error("Deck not found");
