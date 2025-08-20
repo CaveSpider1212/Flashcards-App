@@ -20,6 +20,7 @@ function Study () {
     const [index, setIndex] = useState(0); // represents the index of the card shown on the screen, set to 0 by default
     const [isDeckSelected, setIsDeckSelected] = useState(false); // represents whether a deck has been selected or not, set to false by default
     const [user, setUser] = useState(null); // represents the user logged in, set to null by default
+    const [loading, setLoading] = useState(true); // represents whether the server "get" functions are actively being run (i.e. program is loading), set to true by default
 
 
     /**
@@ -33,18 +34,28 @@ function Study () {
      * If found, sets the user state variable to the user asssociated with the token using currentUser() function
      */
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        const getUserAndDecks = async () => {
+            try {
+                const token = localStorage.getItem("token");
 
-        if (token) {
-            currentUser(token).then((data) => setUser(data));
+                if (token) {
+                    await currentUser(token).then((data) => setUser(data));
 
-            getDecks(token).then((data) => {
-                setDecks(data);
-            });
-        }
-        else {
-            setUser(null);
-        }
+                    await getDecks(token).then((data) => {
+                        setDecks(data);
+                    });
+                }
+                else {
+                    setUser(null);
+                }
+            } catch (err) {
+                console.log(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        getUserAndDecks();
     }, []);
 
 
@@ -136,6 +147,7 @@ function Study () {
 
 
     /**
+     * If program is loading (i.e. loading == true), show a loading message
      * Contains <label> and <select> elements for the dropdown menu selection
      * In the <select> element, a default <option> element is created, and the program creates new <option> elements for each deck in the decks state array with the value set to the name
      *      of each deck
@@ -144,52 +156,59 @@ function Study () {
      */
     return (
         <>
-        {user == null ? (
-            <p className="auth-message">Must be logged in to study decks!</p>
+        {loading ? (
+            <p className="loading-message">Loading...</p>
         ) : (
             <>
-            <div className="select-container">
-                <select name="decks" defaultValue="" onChange={(e) => selectDeck(e.target.value)} className="study-select-input" >
-                    <option value="" disabled hidden>--Please choose a deck to study--</option>
+            {user == null ? (
+                <p className="auth-message">Must be logged in to study decks!</p>
+            ) : (
+                <>
+                <div className="select-container">
+                    <select name="decks" defaultValue="" onChange={(e) => selectDeck(e.target.value)} className="study-select-input" >
+                        <option value="" disabled hidden>--Please choose a deck to study--</option>
 
-                    {decks.map((deck, index) => { // in the Select dropdown, shows the deck names for each of the decks loaded from the localStorage
-                        return (
-                            <option key={index} value={deck.name}>
-                                {deck.name}
-                            </option>
-                        )
-                    })}
-                </select>
-            </div>
-            
-            <div className="header-container">
-                <h3>{selectedName}</h3>
-            </div>
+                        {decks.map((deck, index) => { // in the Select dropdown, shows the deck names for each of the decks loaded from the localStorage
+                            return (
+                                <option key={index} value={deck.name}>
+                                    {deck.name}
+                                </option>
+                            )
+                        })}
+                    </select>
+                </div>
+                
+                <div className="header-container">
+                    <h3>{selectedName}</h3>
+                </div>
 
-            <div className="card-container">
-                {isDeckSelected && (
-                    <div className="study-card">
-                        {selectedDeck.length > 0 ? (
-                            <Flashcard term={currentCard.term} definition={currentCard.definition} cardType="card study" />
-                        ) : (
-                            <Flashcard cardType="card study" />
-                        )}
-
-                        <div className="study-bottom-container">
-                            <div>
-                                <button onClick={prevCard} className="left-button"> &larr; </button>
-                                <button onClick={nextCard} className="right-button">&rarr;</button>
-                            </div>
-
-                            {selectedDeck.length > 0 && (
-                                <p>{index + 1}/{selectedDeck.length}</p>
+                <div className="card-container">
+                    {isDeckSelected && (
+                        <div className="study-card">
+                            {selectedDeck.length > 0 ? (
+                                <Flashcard term={currentCard.term} definition={currentCard.definition} cardType="card study" />
+                            ) : (
+                                <Flashcard cardType="card study" />
                             )}
+
+                            <div className="study-bottom-container">
+                                <div>
+                                    <button onClick={prevCard} className="left-button"> &larr; </button>
+                                    <button onClick={nextCard} className="right-button">&rarr;</button>
+                                </div>
+
+                                {selectedDeck.length > 0 && (
+                                    <p>{index + 1}/{selectedDeck.length}</p>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
+                </>
+            )}
             </>
         )}
+        
             
         </>
     )

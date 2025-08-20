@@ -15,6 +15,7 @@ function Account () {
     const [passwordLogin, setPasswordLogin] = useState(""); // represents the value shown in the Password text input for login, set to an empty string "" by default
     const [usernameRegister, setUsernameRegister] = useState(""); // represents the value shown in the Username text input for register, set to an empty string "" by default
     const [passwordRegister, setPasswordRegister] = useState(""); // represents the value shown in the Password text input for register, set to an empty string "" by default
+    const [loading, setLoading] = useState(true); // represents whether the server "get" functions are actively being run (i.e. program is loading), set to true by default
 
 
     /**
@@ -28,14 +29,24 @@ function Account () {
      * If found, sets the user state variable to the user asssociated with the token using currentUser() function
      */
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        const fetchUser = async () => {
+            try {
+                const token = localStorage.getItem("token");
 
-        if (token) {
-            currentUser(token).then((data) => setUser(data));
+                if (token) {
+                    await currentUser(token).then((data) => setUser(data));
+                }
+                else {
+                    setUser(null);
+                }
+            } catch (err) {
+                console.log(error);
+            } finally {
+                setLoading(false);
+            }
         }
-        else {
-            setUser(null);
-        }
+
+        fetchUser();
     }, []);
 
 
@@ -87,11 +98,16 @@ function Account () {
 
 
     /**
+     * If program is loading (i.e. loading == true), show a loading message
      * If user is logged in, then shows a message (<p>) saying who the user is logged in as with the option to log out
      * If not, then shows 2 <div> sections, one to register the user with username and password inputs and one to log in the user
      */
     return (
         <>
+        {loading ? (
+            <p className="loading-message">Loading...</p>
+        ) : (
+            <>
             {user != null ? (
                 <div className="logout-user">
                     <p>Logged in as {user.username}</p>
@@ -114,6 +130,8 @@ function Account () {
                     </div>
                 </>
             )}
+            </>
+        )}
         </>
     )
 }

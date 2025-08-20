@@ -1,5 +1,5 @@
 /* CSS for the "Decks" page */
 
-.decks-message {
+.decks-message, .loading-message {
     text-align: center;
 }

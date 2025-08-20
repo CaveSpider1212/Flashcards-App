@@ -14,7 +14,6 @@ function ManageDeck () {
      * State variables
      */
     const [cards, setCards] = useState([]); // represents the array of cards that are part of the deck being created/edited
-    // const [existingCards, setExistingCards] = useState([]); // represents the array of cards that were already in the deck before being modified, set to an empty array [] by default (only for updating)
     const [deck, setDeck] = useState([]); // represents the deck the user is editing, set to an empty array [] by default
     const [term, setTerm] = useState(''); // represents the value shown in the Term text input, set to an empty string '' by default
     const [definition, setDefinition] = useState(''); // represents the value shown in the Definition text input, set to an empty string '' by default
@@ -22,6 +21,7 @@ function ManageDeck () {
     const [editTerm, setEditTerm] = useState(''); // represents the value shown in the Term text input when editing a card, set to an empty string '' by default
     const [editDef, setEditDef] = useState(''); // represents the value shown in the Definition text input when editing a card, set to an empty string '' by default
     const [user, setUser] = useState(null); // represents the user logged in, set to null by default
+    const [loading, setLoading] = useState(true); // represents whether the server "get" functions are actively being run (i.e. program is loading), set to true by default
 
 
     /**
@@ -36,14 +36,24 @@ function ManageDeck () {
      * If found, sets the user state variable to the user asssociated with the token using currentUser() function
      */
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        const fetchUser = async () => {
+            try {
+                const token = localStorage.getItem("token");
 
-        if (token) {
-            currentUser(token).then((data) => setUser(data));
-        }
-        else {
-            setUser(null);
-        }
+                if (token) {
+                    await currentUser(token).then((data) => setUser(data));
+                }
+                else {
+                    setUser(null);
+                }
+            } catch (err) {
+                console.log(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchUser();
     }, []);
     
 
@@ -201,6 +211,7 @@ function ManageDeck () {
 
 
     /**
+     * If program is loading (i.e. loading == true), show a loading message
      * Contains a <div> element for the Deck name input
      * Contains a <div> element containing several text/button inputs for creating a new card (term input, definition input, adding card)
      * Contains a <div> element for the "Save Deck" button
@@ -209,54 +220,60 @@ function ManageDeck () {
      */
     return (
         <>
-        {user == null ? (
-            <p className="auth-message">Must be logged in to manage decks!</p>
+        {loading ? (
+            <p className="loading-message">Loading...</p>
         ) : (
             <>
-            <div className="manage-deck-inputs">
-                <div>
-                    <input type="text" placeholder="Deck name" value={name} onChange={(e) => setName(e.target.value)} required="required" className="deck-name-input" />
-                </div>
-
-                <div className="card-inputs">
-                    <input type="text" placeholder="Term" value={term} onChange={(e) => setTerm(e.target.value)} required="required" className="term-input" />
-                    <input type="text" placeholder="Definition" value = {definition} onChange={(e) => setDefinition(e.target.value)} required = "required" className="definition-input" />
-                    <input type="submit" value="Add Card" onClick={addCard} className="add-term-input" />
-                </div>
-                
-                <div>
-                    <input type="submit" value="Save Deck" onClick={saveDeck} className="save-input" />
-                </div>
-            </div>
-
-            {cards.length > 0 ? ( // shows a messsage depending on whether there are cards shown on the screen or not
-                <p className="manage-deck-message">Click on a card to flip it!</p>
+            {user == null ? (
+                <p className="auth-message">Must be logged in to manage decks!</p>
             ) : (
-                <p className="manage-deck-message">Add a deck name, and create a card by adding a term and definition using the text inputs above!</p>
-            )}
-
-            <div className="manage-deck-card">
-                {cards.map((card, index) => (
-                    <div key={index}>
-                        {/* shows either the text box for editing or the flashcard with the term and definition, depending on the value of card.editing */}
-
-                        {card.editing ? (
-                            <div>
-                                <input type="text" value={editTerm} onChange={(e) => setEditTerm(e.target.value)} className="edit-term-input" />
-                                <input type="text" value={editDef} onChange={(e) => setEditDef(e.target.value)} className="edit-definition-input" />
-                                <input type="submit" value="Save card" onClick={() => editFlashcard(index)} className="save-card-input" />
-                            </div>
-                        ) : (
-                            <div>
-                                <Flashcard term={card.term} definition={card.definition} cardType="card createdeck" />
-
-                                <input type="submit" value="Edit" onClick={() => toggleEdit(index)} className="edit-card-input" />
-                                <input type="submit" value="Delete" onClick={() => deleteFlashcard(index)} className="delete-card-input" />
-                            </div>
-                        )}
+                <>
+                <div className="manage-deck-inputs">
+                    <div>
+                        <input type="text" placeholder="Deck name" value={name} onChange={(e) => setName(e.target.value)} required="required" className="deck-name-input" />
                     </div>
-                ))}
-            </div>
+
+                    <div className="card-inputs">
+                        <input type="text" placeholder="Term" value={term} onChange={(e) => setTerm(e.target.value)} required="required" className="term-input" />
+                        <input type="text" placeholder="Definition" value = {definition} onChange={(e) => setDefinition(e.target.value)} required = "required" className="definition-input" />
+                        <input type="submit" value="Add Card" onClick={addCard} className="add-term-input" />
+                    </div>
+                    
+                    <div>
+                        <input type="submit" value="Save Deck" onClick={saveDeck} className="save-input" />
+                    </div>
+                </div>
+
+                {cards.length > 0 ? ( // shows a messsage depending on whether there are cards shown on the screen or not
+                    <p className="manage-deck-message">Click on a card to flip it!</p>
+                ) : (
+                    <p className="manage-deck-message">Add a deck name, and create a card by adding a term and definition using the text inputs above!</p>
+                )}
+
+                <div className="manage-deck-card">
+                    {cards.map((card, index) => (
+                        <div key={index}>
+                            {/* shows either the text box for editing or the flashcard with the term and definition, depending on the value of card.editing */}
+
+                            {card.editing ? (
+                                <div>
+                                    <input type="text" value={editTerm} onChange={(e) => setEditTerm(e.target.value)} className="edit-term-input" />
+                                    <input type="text" value={editDef} onChange={(e) => setEditDef(e.target.value)} className="edit-definition-input" />
+                                    <input type="submit" value="Save card" onClick={() => editFlashcard(index)} className="save-card-input" />
+                                </div>
+                            ) : (
+                                <div>
+                                    <Flashcard term={card.term} definition={card.definition} cardType="card createdeck" />
+
+                                    <input type="submit" value="Edit" onClick={() => toggleEdit(index)} className="edit-card-input" />
+                                    <input type="submit" value="Delete" onClick={() => deleteFlashcard(index)} className="delete-card-input" />
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+                </>
+            )}
             </>
         )}
         </>
