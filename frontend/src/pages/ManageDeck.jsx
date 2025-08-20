@@ -22,6 +22,8 @@ function ManageDeck () {
     const [editDef, setEditDef] = useState(''); // represents the value shown in the Definition text input when editing a card, set to an empty string '' by default
     const [user, setUser] = useState(null); // represents the user logged in, set to null by default
     const [loading, setLoading] = useState(true); // represents whether the server "get" functions are actively being run (i.e. program is loading), set to true by default
+    const [createError, setCreateError] = useState(null); // represents whether there is an error with creating a card or deck (and if so, what the error is), set to null by default
+    const [editError, setEditError] = useState(null); // represents whether there is an error with editing a card (and if so, what the error is), set to null by default
 
 
     /**
@@ -85,11 +87,21 @@ function ManageDeck () {
      * Called when the "Add Card" button is pressed
      */
     const addCard = () => {
-        const newCard = {term, definition, editing: false};
-        setCards((prevCards) => [...prevCards, newCard])
+        try {
+            setCreateError(null);
 
-        setTerm('');
-        setDefinition('');
+            if (!term || !definition) {
+                throw Error("Term and definition are both required");
+            }
+
+            const newCard = {term, definition, editing: false};
+            setCards((prevCards) => [...prevCards, newCard])
+
+            setTerm('');
+            setDefinition('');
+        } catch (err) {
+            setCreateError(err.message);
+        }
     }
 
 
@@ -101,52 +113,58 @@ function ManageDeck () {
      * Navigates to the Decks page when successful
      */
     const saveDeck = async () => {
-        const token = localStorage.getItem("token");
+        try {
+            setCreateError(null);
 
-        if (deckId == 0) { // if the user is creating a new deck (not editing an existing one), then create a new deck and cards
-            const createdDeck = await createDeck(name, token);
+            const token = localStorage.getItem("token");
 
-            // for each card in the cards state array, create a new card in the database using the term, definition, deck ID, and token
-            cards.forEach((card) => {
-                createCard(card.term, card.definition, createdDeck._id, token);
-            });
+            if (deckId == 0) { // if the user is creating a new deck (not editing an existing one), then create a new deck and cards
+                const createdDeck = await createDeck(name, token);
+
+                // for each card in the cards state array, create a new card in the database using the term, definition, deck ID, and token
+                cards.forEach((card) => {
+                    createCard(card.term, card.definition, createdDeck._id, token);
+                });
+            }
+            else { // if the user is editing an existing deck, then update the deck and cards
+                const updatedDeck = await updateDeck(name, deck._id, token); // updates the deck name
+                const existingCards = await getCards(deck._id) // gets the array of cards already in the deck before being modified
+
+                // if a card is in cards but not existingCards, then it is a new card (needs to be created in the database)
+                const newCards = cards.filter((card) => 
+                    !existingCards.some((existingCard) => existingCard._id === card._id)
+                );
+                
+                // if a card is in existingCards but not in cards, then that card was deleted (needs to be deleted from database)
+                const deletedCards = existingCards.filter((existingCard) => 
+                    !cards.some((card) => existingCard._id === card._id)
+                );
+
+                // if a card is both in existingCards and cards, then it was either updated or unchanged (update these cards in the database)
+                const updatedCards = cards.filter((card) => 
+                    existingCards.some((existingCard) => existingCard._id === card._id)
+                );
+
+                // for each new card, create a new flashcard in the database using its term, definition, deck ID, and user token
+                newCards.forEach((card) => {
+                    createCard(card.term, card.definition, updatedDeck._id, token);
+                });
+
+                // for each deleted card, delete the corresponding flashcard from the database using the card's ID and user token
+                deletedCards.forEach((card) => {
+                    deleteCard(card._id, token);
+                });
+
+                // for each card updated or unchanged, update it in the database
+                updatedCards.forEach((card) => {
+                    updateCard(card.term, card.definition, card._id, token);
+                })
+            }
+
+            navigate('/');
+        } catch (err) {
+            setCreateError(err.message);
         }
-        else { // if the user is editing an existing deck, then update the deck and cards
-            const updatedDeck = await updateDeck(name, deck._id, token); // updates the deck name
-            const existingCards = await getCards(deck._id) // gets the array of cards already in the deck before being modified
-
-            // if a card is in cards but not existingCards, then it is a new card (needs to be created in the database)
-            const newCards = cards.filter((card) => 
-                !existingCards.some((existingCard) => existingCard._id === card._id)
-            );
-            
-            // if a card is in existingCards but not in cards, then that card was deleted (needs to be deleted from database)
-            const deletedCards = existingCards.filter((existingCard) => 
-                !cards.some((card) => existingCard._id === card._id)
-            );
-
-            // if a card is both in existingCards and cards, then it was either updated or unchanged (update these cards in the database)
-            const updatedCards = cards.filter((card) => 
-                existingCards.some((existingCard) => existingCard._id === card._id)
-            );
-
-            // for each new card, create a new flashcard in the database using its term, definition, deck ID, and user token
-            newCards.forEach((card) => {
-                createCard(card.term, card.definition, updatedDeck._id, token);
-            });
-
-            // for each deleted card, delete the corresponding flashcard from the database using the card's ID and user token
-            deletedCards.forEach((card) => {
-                deleteCard(card._id, token);
-            });
-
-            // for each card updated or unchanged, update it in the database
-            updatedCards.forEach((card) => {
-                updateCard(card.term, card.definition, card._id, token);
-            })
-        }
-
-        navigate('/');
     }
 
 
@@ -180,15 +198,25 @@ function ManageDeck () {
      * Called when the "Save card" button is pressed
      */
     const editFlashcard = (editIndex) => {
-        const updatedCards = [...cards];
-        updatedCards[editIndex].term = editTerm;
-        updatedCards[editIndex].definition = editDef;
+        try {
+            setEditError(null);
 
-        setEditTerm('');
-        setEditDef('');
-        setCards(updatedCards);
+            if (!editTerm || !editDef) {
+                throw Error("Term and definition are both required");
+            }
 
-        toggleEdit(editIndex);
+            const updatedCards = [...cards];
+            updatedCards[editIndex].term = editTerm;
+            updatedCards[editIndex].definition = editDef;
+
+            setEditTerm('');
+            setEditDef('');
+            setCards(updatedCards);
+
+            toggleEdit(editIndex);
+        } catch (err) {
+            setEditError(err.message);
+        }
     }
 
 
@@ -244,6 +272,10 @@ function ManageDeck () {
                     </div>
                 </div>
 
+                {createError && (
+                    <p className="error-message">{createError}</p>
+                )}
+
                 {cards.length > 0 ? ( // shows a messsage depending on whether there are cards shown on the screen or not
                     <p className="manage-deck-message">Click on a card to flip it!</p>
                 ) : (
@@ -256,11 +288,17 @@ function ManageDeck () {
                             {/* shows either the text box for editing or the flashcard with the term and definition, depending on the value of card.editing */}
 
                             {card.editing ? (
+                                <>
                                 <div>
                                     <input type="text" value={editTerm} onChange={(e) => setEditTerm(e.target.value)} className="edit-term-input" />
                                     <input type="text" value={editDef} onChange={(e) => setEditDef(e.target.value)} className="edit-definition-input" />
                                     <input type="submit" value="Save card" onClick={() => editFlashcard(index)} className="save-card-input" />
                                 </div>
+
+                                {editError && (
+                                    <p className="error-message-edit">{editError}</p>
+                                )}
+                                </>
                             ) : (
                                 <div>
                                     <Flashcard term={card.term} definition={card.definition} cardType="card createdeck" />

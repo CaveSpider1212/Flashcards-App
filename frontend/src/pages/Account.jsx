@@ -16,6 +16,8 @@ function Account () {
     const [usernameRegister, setUsernameRegister] = useState(""); // represents the value shown in the Username text input for register, set to an empty string "" by default
     const [passwordRegister, setPasswordRegister] = useState(""); // represents the value shown in the Password text input for register, set to an empty string "" by default
     const [loading, setLoading] = useState(true); // represents whether the server "get" functions are actively being run (i.e. program is loading), set to true by default
+    const [loginError, setLoginError] = useState(null); // represents whether there is an error with logging in (and if so, what the error is), set to null by default
+    const [registerError, setRegisterError] = useState(null); // represents whether there is an error with registering (and if so, what the error is), set to null by default
 
 
     /**
@@ -62,7 +64,7 @@ function Account () {
             navigate('/');
             window.location.reload(); // refreshes the page after logging in and navigating pages
         } catch (err) {
-            console.error(err);
+            setLoginError(err.message);
         }
     }
 
@@ -83,7 +85,7 @@ function Account () {
                 window.location.reload(); // refreshes the page after registering and navigating pages
             }
         } catch (err) {
-            console.error(err);
+            setRegisterError(err.message);
         }
     }
 
@@ -121,6 +123,10 @@ function Account () {
                         <input type="password" placeholder="Password" value={passwordLogin} onChange={(e) => setPasswordLogin(e.target.value)} required="required" className="pass-input" />
                         <input type="submit" value="Login" onClick={loginUser} className="login-input" />
                     </div>
+
+                    {loginError && (
+                        <p className="error-message">{loginError}</p>
+                    )}
                     
                     <div className="register-user">
                         <h4>Register</h4>
@@ -128,6 +134,10 @@ function Account () {
                         <input type="password" placeholder="Password" value={passwordRegister} onChange={(e) => setPasswordRegister(e.target.value)} required="required" className="pass-input" />
                         <input type="submit" value="Register" onClick={registerUser} className="register-input" />
                     </div>
+
+                    {registerError && (
+                        <p className="error-message">{registerError}</p>
+                    )}
                 </>
             )}
             </>

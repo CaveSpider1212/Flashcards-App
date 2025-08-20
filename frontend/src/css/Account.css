@@ -1,7 +1,6 @@
 .login-user, .register-user, .logout-user {
     margin-left: 15px;
     margin-top: 10px;
-    margin-bottom: 50px;
 }
 
 .user-input, .pass-input, .login-input, .register-input, .logout-input {

@@ -52,8 +52,17 @@
     background-color: #f77272;
 }
 
-.manage-deck-message {
+.manage-deck-message, .error-message {
     margin-left: 15px;
+    font-style: italic;
+}
+
+.error-message {
+    color: red;
+}
+
+.error-message-edit {
+    color: red;
     font-style: italic;
 }
 
