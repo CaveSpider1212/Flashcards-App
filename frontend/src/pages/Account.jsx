@@ -42,7 +42,7 @@ function Account () {
                     setUser(null);
                 }
             } catch (err) {
-                console.log(error);
+                console.log(err);
             } finally {
                 setLoading(false);
             }
