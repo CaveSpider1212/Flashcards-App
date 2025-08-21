@@ -261,7 +261,7 @@ function ManageDeck () {
                 <>
                 <div className="manage-deck-inputs">
                     <div>
-                        <input type="text" placeholder="Deck name" value={name} onChange={(e) => setName(e.target.value)} required="required" className="deck-name-input" />
+                        <input type="text" placeholder="Deck name" value={name || ""} onChange={(e) => setName(e.target.value)} required="required" className="deck-name-input" />
                     </div>
 
                     <div className="card-inputs">
