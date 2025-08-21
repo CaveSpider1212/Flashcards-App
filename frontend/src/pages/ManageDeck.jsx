@@ -41,7 +41,7 @@ function ManageDeck () {
         const fetchUser = async () => {
             try {
                 const token = localStorage.getItem("token");
-
+                
                 if (token) {
                     await currentUser(token).then((data) => setUser(data));
                 }
@@ -50,7 +50,7 @@ function ManageDeck () {
                 }
             } catch (err) {
                 console.log(err);
-            } finally {
+            } finally { // once code is done executing (i.e. server requests are finished), loading is finished
                 setLoading(false);
             }
         };
@@ -60,9 +60,9 @@ function ManageDeck () {
     
 
     /**
-     * Reads the corresponding deck and deck name from the localStorage, and stores it in the loadedDecks and loadedName variables
-     * Sets the cards and name state variables to loadedDecks and loadedName, respectively
-     * Runs each time deckId changes, indicated by [deckId]
+     * Finds the deck using the deck ID parameter and the getDeckById() function, then sets the deck state variable to that
+     * Finds the cards using the deck ID parameter and the getCards() function, then sets the cards state array to that
+     * Run each time deckId changes, indicated by [deckId] (run only when editing deck)
      */
     useEffect(() => {
         if (deckId != 0) { // if the deckId (number read from URL) is not 0 (i.e. user is editing an existing deck), then get the corresponding deck from the database
@@ -90,6 +90,7 @@ function ManageDeck () {
         try {
             setCreateError(null);
 
+            // Data validation - if either term or definition are null, throw an error and prevent the rest of the function from executing
             if (!term || !definition) {
                 throw Error("Term and definition are both required");
             }
@@ -99,7 +100,7 @@ function ManageDeck () {
 
             setTerm('');
             setDefinition('');
-        } catch (err) {
+        } catch (err) { // if there is an error, set createError to the message (which will be displayed to the user)
             setCreateError(err.message);
         }
     }
@@ -162,7 +163,7 @@ function ManageDeck () {
             }
 
             navigate('/');
-        } catch (err) {
+        } catch (err) { // if there is an error, set createError to the message (which will be displayed to the user)
             setCreateError(err.message);
         }
     }
@@ -201,6 +202,7 @@ function ManageDeck () {
         try {
             setEditError(null);
 
+            // Data validation - if either editTerm or editDef are null, throw an error and prevent the rest of the function from executing
             if (!editTerm || !editDef) {
                 throw Error("Term and definition are both required");
             }
@@ -214,7 +216,7 @@ function ManageDeck () {
             setCards(updatedCards);
 
             toggleEdit(editIndex);
-        } catch (err) {
+        } catch (err) { // if there is an error, set editError to the message (which will be displayed to the user)
             setEditError(err.message);
         }
     }
@@ -245,6 +247,7 @@ function ManageDeck () {
      * Contains a <div> element for the "Save Deck" button
      * Contains a <div> element for each of the cards in the current deck; program shows each cards by mapping the cards state array, seeing if the user is editing the card
      *      or not, and showing either the edit term and edit definition inputs or the card with the term and definition
+     * If there is a createError or editError at all, then shows a <p> element showing an error message
      */
     return (
         <>

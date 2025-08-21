@@ -28,6 +28,7 @@ function Decks () {
 
                 if (token) {
                     await currentUser(token).then((data) => setUser(data));
+                    
                     await getDecks(token).then((data) => {
                         setDecks(data);
                     })
@@ -37,7 +38,7 @@ function Decks () {
                 }
             } catch (err) {
                 console.log(err);
-            } finally {
+            } finally { // once code is done executing (i.e. server requests are finished), loading is finished
                 setLoading(false);
             }
         };

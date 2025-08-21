@@ -34,7 +34,7 @@ const validateToken = async (req, res, next) => {
         }
 
         next();
-    } catch (err) {
+    } catch (err) { // if there is an error, send an error JSON message
         res.status(401).json({message: "User not authorized or token is invalid"});
     }
 }

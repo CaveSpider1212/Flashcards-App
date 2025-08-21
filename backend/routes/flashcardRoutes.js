@@ -9,7 +9,7 @@ const Deck = require("../models/deckModel");
 // CREATE ROUTER
 const router = express.Router();
 
-// ROUTES -- *** require user authentication/login
+// ROUTES
 router.get("/:id", getFlashcards);
 router.post("/:id", validateToken, isOwner(Deck), createFlashcard); // verifies the logged-in user owns the deck being modified
 router.put("/:id", validateToken, isOwner(Card), updateFlashcard); // verifies the logged-in user owns the card being modified

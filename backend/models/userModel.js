@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 /**
  * Username: username for login (String, required)
  * Password: password for login (String, required)
+ * Decks: ID's of decks created by user (ObjectId)
  */
 const userSchema = mongoose.Schema({
     username: {

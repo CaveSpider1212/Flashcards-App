@@ -12,6 +12,7 @@ connectDB(); // calls connectDB() function, which connects to MongoDB database
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// connects server with client (both local and deployed)
 app.use(cors({
     origin: [
         "http://localhost:5173",
@@ -21,6 +22,7 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
 }));
+
 app.use(express.json());
 
 // ADD ROUTES TO APP

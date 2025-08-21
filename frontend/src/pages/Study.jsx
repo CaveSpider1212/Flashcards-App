@@ -50,7 +50,7 @@ function Study () {
                 }
             } catch (err) {
                 console.log(err);
-            } finally {
+            } finally { // once code is done executing (i.e. server requests are finished), loading is finished
                 setLoading(false);
             }
         };
@@ -62,7 +62,7 @@ function Study () {
     /**
      * Reads the corresponding deck from the localStorage based on the deckId value into "deck"
      * Sets the selected deck state array to the "deck" array
-     * Runs every time deckId changes, shown by [deckId]
+     * Runs every time deckId changes, shown by [deckId] (runs only when user navigates to page from "Decks" page)
      */
     useEffect(() => {
         if (deckId != 0) { // if the deckId (number read from URL) is not 0 (i.e. user navigated through this page by clicking on a "Study" button), then get the corresponding cards and deck from the database

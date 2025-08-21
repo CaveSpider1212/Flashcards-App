@@ -14,7 +14,7 @@ function App() {
 
   /**
    * Creates a <NavBar> component, which is the navigation bar
-   * Creates routes to the different pages of the application, "Decks," "Manage Deck," and "Study"
+   * Creates routes to the different pages of the application, "Decks," "Manage Deck," "Study," and "Account"
    */
   return (
     <div>

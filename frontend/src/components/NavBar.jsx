@@ -27,8 +27,6 @@ function NavBar () {
         else {
             setUser(null);
         }
-
-        // window.location.reload(); // refreshes the page after login/logout (to display change)
     });
 
 

@@ -43,7 +43,7 @@ function Account () {
                 }
             } catch (err) {
                 console.log(err);
-            } finally {
+            } finally { // once code is done executing (i.e. server requests are finished), loading is finished
                 setLoading(false);
             }
         }
@@ -63,7 +63,7 @@ function Account () {
             localStorage.setItem("token", user.token);
             navigate('/');
             window.location.reload(); // refreshes the page after logging in and navigating pages
-        } catch (err) {
+        } catch (err) { // if there is an error, set loginError to the message (which will be displayed to the user)
             setLoginError(err.message);
         }
     }
@@ -84,7 +84,7 @@ function Account () {
                 navigate('/');
                 window.location.reload(); // refreshes the page after registering and navigating pages
             }
-        } catch (err) {
+        } catch (err) { // if there is an error, set registerError to the message (which will be displayed to the user)
             setRegisterError(err.message);
         }
     }
@@ -103,6 +103,7 @@ function Account () {
      * If program is loading (i.e. loading == true), show a loading message
      * If user is logged in, then shows a message (<p>) saying who the user is logged in as with the option to log out
      * If not, then shows 2 <div> sections, one to register the user with username and password inputs and one to log in the user
+     * If there is a loginError or registerError at all, then show an error message to the user
      */
     return (
         <>
